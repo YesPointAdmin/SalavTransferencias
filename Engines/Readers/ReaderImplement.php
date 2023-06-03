@@ -6,7 +6,7 @@ class ReaderImplement extends GeneralLogger{
 
     protected string $bitacoraBasePath = "../logs/BD_GENERAL/bitacorageneral";
     protected string $bitacoraPath = "../logs/BD_GENERAL/bitacorageneral";
-    protected array $processActualSecuence = [1=>"marca",2=>"year",3=>"modelo",4=>"motor",5=>"part_type",6=>"position",7=>"part_number"];
+    protected array $processActualSequence = [1=>"marca",2=>"year",3=>"modelo",4=>"motor",5=>"part_type",6=>"position",7=>"part_number"];
     protected string $patron = '/(\w+) (\d+), (\d+)/i';
     //protected InscribeBitacora $bitacoraResgistartion;
 
@@ -20,19 +20,19 @@ class ReaderImplement extends GeneralLogger{
             $readMoment = \time();
             if(!is_array($rowValue) || gettype($rowValue) !== 'array'){
                 $typeOfRow = gettype($rowValue);
-                $this->wirteBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}",$fileName);
+                $this->writeBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}",$fileName);
             } else {
                 $dataRow = "|";
                 foreach($rowValue as $columnKey => $columnValue)
                     $dataRow .= "columnKey:{$columnKey}=columnValue:{$columnValue}|";
                 
-                $this->wirteBitacora("DataToProcess key: {$rowKey} values: {$dataRow}. ",$fileName);
+                $this->writeBitacora("DataToProcess key: {$rowKey} values: {$dataRow}. ",$fileName);
             }
         }
 
     }
 
-    protected function wirteBitacora(string $message, string $fileName):bool{
+    protected function writeBitacora(string $message, string $fileName):bool{
 
         if($this->bitacoraBasePath===$this->bitacoraPath)
             $this->setBitacoraPath($fileName);
@@ -52,24 +52,24 @@ class ReaderImplement extends GeneralLogger{
         $dataStructure = [];
         foreach($rowValue as $columnKey => $columnValue){
             
-            if(array_key_exists($columnKey,$this->processActualSecuence)){
+            if(array_key_exists($columnKey,$this->processActualSequence)){
                 
 				$columnValue = utf8_decode($columnValue);
-                $dataRow .= "{$this->processActualSecuence[$columnKey]}:{$columnValue}|";
+                $dataRow .= "{$this->processActualSequence[$columnKey]}:{$columnValue}|";
                 $dataStructure=$this->transformDataIfItsNecesary($columnValue,$columnKey, $dataStructure);
             }
         }
 
         if($dataRow!=="|"&&count($dataStructure) > 0){
-            $this->wirteBitacora("Fila Actual: {$rowKey} => {$dataRow}. ",$fileName);
+            $this->writeBitacora("Fila Actual: {$rowKey} => {$dataRow}. ",$fileName);
             if(in_array(false,$dataStructure)){
-                $this->wirteBitacora("No se procesara puesto que almenos uno de los datos requeridos esta vacio: {$rowKey} => N/A. ",$fileName);
+                $this->writeBitacora("No se procesara puesto que almenos uno de los datos requeridos esta vacio: {$rowKey} => N/A. ",$fileName);
                 $dataStructure=false;
             }
                 
 
         } else {
-            $this->wirteBitacora("Sin datos que procesar en la fila: {$rowKey} => N/A. ",$fileName);
+            $this->writeBitacora("Sin datos que procesar en la fila: {$rowKey} => N/A. ",$fileName);
             $dataStructure=false;
 
         }

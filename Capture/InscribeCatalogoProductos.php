@@ -46,11 +46,33 @@ class InscribeCatalogoProductos extends Persistance{
         return $result;
     }
 
-    public function excecuteSelect() : mixed {
-        $sqlSentence = $this->generateSelectSentece();
+    public function executeSelect(string $typeOf = 'select', string $data) : mixed {
+        /* $sqlSentence = $this->generateSelectSentece();
         $result = $this->prepareAndExecuteSelect($sqlSentence);
-        return $result;
-    }
-}
+        return $result; */
+        $result = false;
+            
+            //echo "<br /> Into Execute";
+            switch ($typeOf) {
+                case 'insert':
+                    # code...
+                    echo "<br /> gonna be insert";
+                    $sqlSentence = $this->generateInsertSentece();
+                    break;
+    
+                    case 'select':
+                        default:
+                            # code...
+                            $sqlSentence = $this->generateSelectSentece();
+                            break;
+                }
+                
+                if(!empty($sqlSentence))
+               $result = $this->prepareAndExecSelectProcedural($sqlSentence, $data);
+            else 
+                $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
+            
+            return $result;
+        }      
 
-?>
+    }
