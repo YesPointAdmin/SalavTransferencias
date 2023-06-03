@@ -6,8 +6,8 @@ class ReadBosch extends ReaderImplement{
     
     protected string $bitacoraBasePath = "../logs/BD_BOSCH/bitacorabosh";
     protected string $bitacoraPath = "../logs/BD_BOSCH/bitacorabosh";
-    protected array $processActualSecuence = [1=>"marca",2=>"year",3=>"modelo",5=>"motor",9=>"part_type",10=>"position",13=>"part_number"];
-    protected array $processTransfromation = [1,3,5];
+    protected array $processActualSequence = [1=>"marca",2=>"year",3=>"modelo",5=>"motor",9=>"part_type",10=>"position",13=>"part_number"];
+    protected array $processTransformation = [1,3,5];
     protected array $processRequired = [1,2,3,5,9,13];
     protected array $processTrim = [13];
 
@@ -22,11 +22,11 @@ class ReadBosch extends ReaderImplement{
             $readMoment = \time();
             if((!is_array($rowValue) || gettype($rowValue) !== 'array')){
                 $typeOfRow = gettype($rowValue);
-                $this->wirteBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}",$fileName);
+                $this->writeBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}",$fileName);
             } else {
                 if($dataToRetrieve = $this->retrieveDataStructure( $fileName, $rowKey, $rowValue)){
                     
-                    $this->wirteBitacora("Datos recuperados, continua proceso. ",$fileName);
+                    $this->writeBitacora("Datos recuperados, continua proceso. ",$fileName);
                     //Validar en catalogo_producto por part_number
                     $this->validateCatalogoProductos($fileName, $dataToRetrieve['part_number'], $link);
 
@@ -40,7 +40,7 @@ class ReadBosch extends ReaderImplement{
     }
 
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link) : mixed {
-        $this->wirteBitacora("Se consulta Catalogo de Producto el No. De Parte: {$part_number} ",$fileName);
+        $this->writeBitacora("Se consulta Catalogo de Producto el No. De Parte: {$part_number} ",$fileName);
         $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($fileName,$part_number);
         //$resultData = false;
 
@@ -48,17 +48,17 @@ class ReadBosch extends ReaderImplement{
             return false;
 
 /*         if(\get_class($resultData) === 'mysqli_result'){
-            $this->wirteBitacora("Existen datos, inicia la recuperacion... ",$fileName);
+            $this->writeBitacora("Existen datos, inicia la recuperacion... ",$fileName);
             while ($rowResult = mysqli_fetch_array($resultData))
             {
-                $this->wirteBitacora("Type of existing Data: ".gettype($rowResult),$fileName);
+                $this->writeBitacora("Type of existing Data: ".gettype($rowResult),$fileName);
                 $rowMessage = "|";
                 foreach ($rowResult as $keyRowResult => $valueRowResult)
                 {
-                    $this->wirteBitacora("Type of valueRowResult: ".gettype($valueRowResult),$fileName);
+                    $this->writeBitacora("Type of valueRowResult: ".gettype($valueRowResult),$fileName);
                     $rowMessage .= " keyRowResult:{$keyRowResult}<=>valueRowResult:{$valueRowResult} |";
                 }
-                $this->wirteBitacora("Datos recuperados, resultado de consultar Catalogo de producto: \n\t ",$fileName);
+                $this->writeBitacora("Datos recuperados, resultado de consultar Catalogo de producto: \n\t ",$fileName);
             }
         }
         ProductosSingleton::getInstance($link)->cleanResult($resultData); */
@@ -69,7 +69,7 @@ class ReadBosch extends ReaderImplement{
         
         $value = $this->validateParticularData( $key, $value);
 
-        if((array_key_exists($key,$this->processTransfromation)||array_key_exists($key,$this->processTrim))&&!is_bool($value)){
+        if((array_key_exists($key,$this->processTransformation)||array_key_exists($key,$this->processTrim))&&!is_bool($value)){
             
             if(!array_key_exists($key,$this->processTrim)){
                 $value = str_replace(".", "", $value);
@@ -89,9 +89,11 @@ class ReadBosch extends ReaderImplement{
             $dataStructure["anio_fin"] = $value;
         } else {
             $value = (!$value)?$value:preg_replace($this->patron, "", strtoupper($value));
-            $dataStructure[$this->processActualSecuence[$key]] = $value;
+            $dataStructure[$this->processActualSequence[$key]] = $value;
 
         }
+
+        //Decode/Encode error
 
         return $dataStructure;
     }
