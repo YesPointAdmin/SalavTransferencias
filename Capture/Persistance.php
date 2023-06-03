@@ -56,7 +56,7 @@ class Persistance {
                 throw new Exception("Error at Prepare Sentence => ".mysqli_error($this->connection), 1);
             
         }catch(Exception $e){
-            $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: \n ".$e->getMessage());
+            $this->_log->outErrorMessage("Error al ejecutar en '{$this->tableName}' error: \n ".$e->getMessage());
             $result = false;
         } finally {
             
