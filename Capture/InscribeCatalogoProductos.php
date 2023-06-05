@@ -39,40 +39,28 @@ class InscribeCatalogoProductos extends Persistance{
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
 
         if(!empty($sqlSentence))
-           $result = $this->prepareAndExecuteSentece($sqlSentence,...$data);
+           $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
         
         return $result;
     }
 
-    public function executeSelect(string $typeOf = 'select', string $data) : mixed {
+    public function executeSelect( string $data) : mixed {
         /* $sqlSentence = $this->generateSelectSentece();
         $result = $this->prepareAndExecuteSelect($sqlSentence);
         return $result; */
         $result = false;
             
-            //echo "<br /> Into Execute";
-            switch ($typeOf) {
-                case 'insert':
-                    # code...
-                    echo "<br /> gonna be insert";
-                    $sqlSentence = $this->generateInsertSentece();
-                    break;
-    
-                    case 'select':
-                        default:
-                            # code...
-                            $sqlSentence = $this->generateSelectSentece();
-                            break;
-                }
-                
-                if(!empty($sqlSentence))
-               $result = $this->prepareAndExecSelectProcedural($sqlSentence, $data);
-            else 
-                $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
-            
-            return $result;
-        }      
+        $sqlSentence = $this->generateSelectSentece();
 
-    }
+                
+        if(!empty($sqlSentence))
+            $result = $this->prepareAndExecSelectProcedural($sqlSentence, $data);
+        else 
+            $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
+        
+        return $result;
+    }      
+
+}

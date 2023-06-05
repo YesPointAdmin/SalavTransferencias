@@ -14,7 +14,7 @@ class Persistance
         $this->_log = new  GeneralLogger(\get_class($this), $process);
     }
 
-    public function prepareAndExecuteSentece(string $sqlQuery, mixed ...$names): mixed
+    public function prepareAndExecuteSentece(string $typeOf ="select", string $sqlQuery, mixed ...$names): mixed
     {
 
 
@@ -22,57 +22,18 @@ class Persistance
         $result = true;
         $data = null;
         try {
-            $sentenceInitialized = mysqli_stmt_init($this->connection);
-            if ($sentenceToExecute = mysqli_stmt_prepare($sentenceInitialized, $sqlQuery)) {
+            //$sentenceInitialized = mysqli_stmt_init($this->connection);
+            if ($sentenceToExecute = mysqli_prepare($this->connection, $sqlQuery)) {
                 //$this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
-                $sentenceToExecute = $this->getBindingSentenceIfRequired($sentenceInitialized, $names);
-                if ($sentenceToExecute === false)
-                    throw new Exception("Error at binding Query => " . mysqli_error($this->connection), 1);
-
+                $assigmentArgs = $this->getBindingNamesType( ...$names);
+                $this->_log->outMessage("Se insertaran los tipos: {$assigmentArgs}, Para las variables: ".json_encode($names));
+                if ($sentenceToExecute === "")
+                    throw new Exception("Error at binding types => " . mysqli_error($this->connection), 1);
+                mysqli_stmt_bind_param($sentenceToExecute,$assigmentArgs,...$names);
                 if ($result = mysqli_stmt_execute($sentenceToExecute)) {
 
                     //Switch affectedRows - NumRows
-                    $this->_log->outMessage("Se ha ejecutado | {$sqlQuery} | correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
-
-                    //$output = [0, 0];
-
-
-                    /* mysqli_stmt_bind_result($sentenceToExecute, ...$output);
-
-                    while (mysqli_stmt_fetch($sentenceToExecute)){
-                        echo "id: " . $output[0] ."\n";
-                        echo "part_number: " . $output[1] ."\n";
-                        $this->_log->outMessage("Type of existing output: ".gettype($output[1]));
-                    } */
-                    /* if($data = mysqli_stmt_get_result($sentenceToExecute)){
-                        $result = $data;
-                        $this->_log->outMessage("Type of existing data: ".gettype($data));
-                        if(gettype($data) === 'object'){
-                            $this->_log->outMessage("Validacion de => ".get_class($data));
-                            if(get_class($data) == "mysqli_result"){
-
-                                do{
-                                    $rowResult = mysqli_fetch_array($data, MYSQLI_ASSOC);
-                                    $this->_log->outMessage("Type of existing rowResult: ".gettype($rowResult));
-                                    $rowMessage = "|";
-                                    foreach ($rowResult as $keyRowResult => $valueRowResult)
-                                    {
-                                        $this->_log->outMessage("Type of valueRowResult: ".gettype($valueRowResult));
-                                        $rowMessage .= " keyRowResult:{$keyRowResult}<=>valueRowResult:{$valueRowResult} |";
-                                    }
-                                    $this->_log->outMessage("Datos recuperados, resultado de consultar Catalogo de producto: \n\t ".$rowMessage);
-                                }
-                                while ($rowResult);
-                            }
-                        }
-                        
-                       
-                    } */
-
-                    //$this->_log->outMessage("Se ha ejecutado correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
-
-                    //echo "Se ha insertado correctamente. ";
-                    //$this->_log->outMessage("Se ha ejecutado correctamente. Afected Rows: {$sentenceToExecute->affected_rows} , Inserted Id: {$sentenceToExecute->insert_id} ");
+                    $result = $this->retrieveResult( $typeOf,  $sqlQuery, $sentenceToExecute);
 
                 } else
                     throw new Exception("Error at execute Query => " . mysqli_error($this->connection), 1);
@@ -88,102 +49,52 @@ class Persistance
         return $result;
     }
 
-
-    public function prepareAndExecuteSelect(string $sqlQuery, string $names): mixed
-    {
-
-        try {
-            $sentenceInitialized = mysqli_stmt_init($this->connection);
-
-            if ($sentenceToExecute = mysqli_stmt_prepare($sentenceInitialized, $sqlQuery)) {
-                $this->_log->outMessage("Type of existing data: => " . (gettype($sentenceToExecute)));
-
-                $sentenceToExecute = $this->getBindingSentenceIfRequired($sentenceInitialized, $names);
-                if ($sentenceToExecute === false)
-                    throw new Exception("Error at binding Query => " . mysqli_error($this->connection), 1);
-
-                mysqli_stmt_bind_param($sentenceToExecute, 's', $names);
-                $this->_log->outMessage("Preparando secuencia param => " . (gettype($names)));
-
-
-                if ($result = mysqli_stmt_execute($sentenceToExecute)) {
-
-                    $output = [0, 0];
-
-                    while (mysqli_stmt_fetch($sentenceToExecute)) {
-                        echo "id: " . $output[0] . "\n";
-                        echo "part_number: " . $output[1] . "\n";
-                        $this->_log->outMessage("Type of existing output: " . gettype($output[1]));
+    public function retrieveResult(string $typeOf, string $sqlQuery,mysqli_stmt $sentenceToExecute) : mixed {
+        $result = null;
+        switch ($typeOf) {
+            case 'insert':
+                # code...
+                $this->_log->outMessage("Se ha ejecutado | {$sqlQuery} | correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
+                $result = true;
+                break;
+            case 'select':
+            default:
+                # code...
+                $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$sentenceToExecute->num_rows} ");
+                // Paso 6: Obtener los resultados de la consulta
+                $resultData = mysqli_stmt_get_result($sentenceToExecute);
+            
+                // Paso 7: Procesar los resultados
+                $prepareResult = array();
+                while ($row = mysqli_fetch_assoc($resultData)) {
+                    //echo "id: " . $row["id"] . " - part_number: " . $row["part_number"] . "<br>";
+                    if(is_array($row)){
+                        $elementResult = [];
+                        foreach($row as $rowKey =>$rowValue){
+                            $elementResult[$rowKey] = $rowValue;
+                            
+                        }
+                        if(count($elementResult)>0)
+                            $prepareResult[] = $elementResult;
                     }
-
-                    $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
-                } else
-                    throw new Exception("Error at execute Query => " . mysqli_error($this->connection), 1);
-            } else
-                throw new Exception("Error at Prepare Sentence => " . mysqli_error($this->connection), 1);
-        } catch (Exception $e) {
-            $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: \n " . $e->getMessage());
-            $result = false;
-        } finally {
-
-            $this->cleanMemoryAfterQuery($sentenceToExecute);
+                }
+                $resultMessage = \json_encode($prepareResult);
+                $this->_log->outMessage("Se ha ejecutado correctamente. Num Rows: {$sentenceToExecute->num_rows} , Result: {$resultMessage}");
+                $result = $prepareResult;
+                break;
         }
-    }
-
-    public function prepareAndExecSelectOrientedObj(string $sqlQuery, string $names): mixed
-    {
-
-        //$sentenceToExecute = null;
-        $result = true;
-        $data = null;
-
-        //$sentenceInitialized = mysqli_stmt_init($this->connection);
-        $stmt = $this->connection->stmt_init();
-
-        $stmt->prepare($sqlQuery);
-
-        // bind parameters for markers 
-        $stmt->bind_param("s", $names);
-
-        // execute query 
-        $stmt->execute();
-
-        //bind result variables 
-        $stmt->bind_result($data);
-
-        // fetch value 
-        $stmt->fetch();
-
-        printf("%s is part_number %s\n", $names, $data);
+        return $result;
     }
 
     public function prepareAndExecSelectProcedural(string $sqlQuery, string $partNumber): mixed
     {
         try {
-           /*  $servername = "localhost:3306";
-            $username = "prueba_salav2";
-            $password = "147258369";
-            $dbname = "salav_test";
- */
-            //$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-            /* if (!$conn) {
-                die("Error de conexión: " . mysqli_connect_error());
-            } */
-
-            // Paso 2: Definir la consulta preparada
-            //print_r($sqlQuery);
-
-            $this->connection;
-            // Paso 3: Preparar la consulta
             $stmt = mysqli_prepare($this->connection, $sqlQuery);
 
-            if (!$stmt) {
-                die("Error al preparar la consulta: " . mysqli_error($this->connection));
-            }
-
-            // Paso 4: Vincular los parámetros de la consulta
-            //print_r($partNumber);
+            if (!$stmt) 
+                throw new Exception("Error al preparar la consulta: " . mysqli_error($this->connection));
+            
 
             mysqli_stmt_bind_param($stmt, "s", $partNumber); // "s" indica que se espera un valor de tipo cadena (string)
 
@@ -195,10 +106,10 @@ class Persistance
             
                 // Paso 7: Procesar los resultados
                 while ($row = mysqli_fetch_assoc($result)) {
-                    echo "id: " . $row["id"] . " - part_number: " . $row["part_number"] . "<br>";
+                    //echo "id: " . $row["id"] . " - part_number: " . $row["part_number"] . "<br>";
                     $this->_log->outMessage("Se ha ejecutado correctamente. Num Rows: {$stmt->num_rows} , SELECT Id: {$row["id"]}, SELECT part_number: {$row["part_number"]}");
                 }
-                echo "Se ha insertado correctamente. ";
+                //echo "Se ha insertado correctamente. ";
                 //$this->_log->outMessage("Se ha ejecutado correctamente. Afected Rows: {$stmt->num_rows} , SELECT Id: {$stmt->insert_id} ");
             } else {
                 die("Error al ejecutar la consulta: " . mysqli_error($this->connection));
@@ -208,6 +119,7 @@ class Persistance
             $this->_log->outErrorMessage("Error al ejecutar en '{$this->tableName}' error: \n " . $e->getMessage());
             $result = false;
         }
+        return $result;
     }
 
     public function cleanMemoryAfterQuery(mixed $dataToliberate)
@@ -246,5 +158,17 @@ class Persistance
                 $catchResut = mysqli_stmt_bind_param($sentenceToExecute, $assingmentArgs, ...$names) or throw new Exception("Error at Binding Sentece => " . mysqli_error($this->connection), 1);
         }
         return ($catchResut) ? $sentenceToExecute : $catchResut;
+    }
+
+    public function getBindingNamesType( mixed ...$names): mixed
+    {
+        $countDatas = count($names) > 0;
+        $assingmentArgs = "";
+        if ($countDatas > 0) {
+            foreach ($names as $name)
+                $assingmentArgs .= "s";
+           
+        }
+        return $assingmentArgs;
     }
 }

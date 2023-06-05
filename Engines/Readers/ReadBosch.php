@@ -41,7 +41,7 @@ class ReadBosch extends ReaderImplement{
 
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link) : mixed {
         $this->writeBitacora("Se consulta Catalogo de Producto el No. De Parte: {$part_number} ",$fileName);
-        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($fileName,$part_number);
+        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($part_number);
         //$resultData = false;
 
         if(is_bool($resultData))
