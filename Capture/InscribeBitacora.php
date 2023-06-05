@@ -39,7 +39,7 @@ class InscribeBitacora extends Persistance{
         }
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
         if(!empty($sqlSentence))
-            $this->prepareAndExecuteSentece($sqlSentence,...$data);
+            $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
     }

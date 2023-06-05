@@ -19,7 +19,7 @@ class CatalogoProductosTest extends InscribeCatalogoProductos{
     public function testRunPreparedStatement() : void {
         echo "<br /> Running test...";
         $testVar = "SPC-8655-Z";
-        $this->executeSelect("select", $testVar);
+        $this->executeQuery('select',$testVar);
     }
 }
 
