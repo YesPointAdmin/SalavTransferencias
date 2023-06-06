@@ -2,11 +2,11 @@
 
 require_once('ReaderImplement.php');
 
-class ReadBosch extends ReaderImplement
+class ReadFritec extends ReaderImplement
 {
 
-    protected string $bitacoraBasePath = "../logs/BD_BOSCH/bitacorabosh";
-    protected string $bitacoraPath = "../logs/BD_BOSCH/bitacorabosh";
+    protected string $bitacoraBasePath = "../logs/BD_FRITEC/bitacorafritec";
+    protected string $bitacoraPath = "../logs/BD_FRITEC/bitacorafritec";
     protected array $processActualSequence = [1 => "marca", 2 => "year", 3 => "modelo", 5 => "motor", 9 => "part_type", 10 => "position", 13 => "part_number"];
     protected array $processTransformation = [1, 3, 5];
     protected array $processRequired = [1, 2, 3, 5, 9, 13];

@@ -26,7 +26,7 @@ class Persistance
             if ($sentenceToExecute = mysqli_prepare($this->connection, $sqlQuery)) {
                 $this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
                 $assigmentArgs = $this->getBindingNamesType( ...$names);
-                $this->_log->outMessage("Se insertaran los tipos: {$assigmentArgs}, Para las variables: ".json_encode($names));
+                $this->_log->outMessage("Se procesaran los tipos: {$assigmentArgs}, Para las variables: ".json_encode($names));
                 if ($sentenceToExecute === "")
                     throw new Exception("Error at binding types => " . mysqli_error($this->connection), 1);
                 mysqli_stmt_bind_param($sentenceToExecute,$assigmentArgs,...$names);
@@ -56,23 +56,21 @@ class Persistance
                 # code...
                 $this->_log->outMessage("Se ha ejecutado | {$sqlQuery} | correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
                 
-                $result = ($sentenceToExecute->affected_rows > 0)? true : false;
+                $result = ($sentenceToExecute->affected_rows > 0) ? (isset($sentenceToExecute->insert_id) ? $sentenceToExecute->insert_id : true) : false;
 
                 break;
             case 'select':
             default:
-                # code...
-                $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$sentenceToExecute->num_rows} ");
-                
-                if($sentenceToExecute->num_rows === 0)
-                    return 0;
-
                 // Paso 6: Obtener los resultados de la consulta
                 $resultData = mysqli_stmt_get_result($sentenceToExecute);
             
+                $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$resultData->num_rows} ");
+                
+                if($resultData->num_rows === 0)
+                    return 0;
                 // Paso 7: Procesar los resultados
                 $prepareResult = array();
-                while ($row = mysqli_fetch_assoc($resultData)) {
+                while ($row = mysqli_fetch_assoc($resultData)) {   
                     //echo "id: " . $row["id"] . " - part_number: " . $row["part_number"] . "<br>";
                     if(is_array($row)){
                         $elementResult = [];
@@ -89,6 +87,8 @@ class Persistance
                 $resultMessage = \json_encode($prepareResult);
                 $this->_log->outMessage("Se ha ejecutado correctamente. Num Rows: {$sentenceToExecute->num_rows} , Result: {$resultMessage}");
                 $result = $prepareResult;
+                
+                $this->cleanMemoryAfterQuery($resultData);
                 break;
         }
         return $result;
@@ -119,9 +119,9 @@ class Persistance
                 }
                 //echo "Se ha insertado correctamente. ";
                 //$this->_log->outMessage("Se ha ejecutado correctamente. Afected Rows: {$stmt->num_rows} , SELECT Id: {$stmt->insert_id} ");
-            } else {
-                die("Error al ejecutar la consulta: " . mysqli_error($this->connection));
-            }
+            } else 
+                throw new Exception("Error al ejecutar la consulta: " . mysqli_error($this->connection),1);
+            
 
         } catch (Exception $e) {
             $this->_log->outErrorMessage("Error al ejecutar en '{$this->tableName}' error: \n " . $e->getMessage());

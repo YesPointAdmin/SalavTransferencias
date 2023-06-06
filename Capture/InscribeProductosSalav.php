@@ -24,7 +24,7 @@ class InscribeProductosSalav extends Persistance{
         switch ($typeOf) {
             case 'insert':
                 # code...
-                echo "<br /> gonna be insert";
+                //echo "<br /> gonna be insert";
                 $sqlSentence = $this->generateInsertSentece();
                 break;
             

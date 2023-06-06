@@ -14,16 +14,11 @@ class TestSigleton {
 
         $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
 
-        var_dump($productoSalv);
-
         if($productoSalv === 0){
             echo "<br /> No existe, se debe guardar";
-            $insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter","");
-        }
-            
-        
-        else
-            echo "No se guarda porque ya existe";
+            $insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
+        }   else
+            echo "No se guarda porque ya existe: {$productoSalv[0]['id']}";
         //$marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod
     }
 }
