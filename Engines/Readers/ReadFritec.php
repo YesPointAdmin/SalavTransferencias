@@ -2,26 +2,26 @@
 
 require_once('ReaderImplement.php');
 
-class ReadBosch extends ReaderImplement
+class ReadFritec extends ReaderImplement
 {
 
-    protected string $bitacoraBasePath = "../logs/BD_BOSCH/bitacorabosh";
-    protected string $bitacoraPath = "../logs/BD_BOSCH/bitacorabosh";
-    protected array $processActualSequence = [1 => "marca", 2 => "year", 3 => "modelo", 5 => "motor", 9 => "part_type", 10 => "position", 13 => "part_number"];
+    protected string $bitacoraBasePath = "../logs/BD_FRITEC/bitacorafritec";
+    protected string $bitacoraPath = "../logs/BD_FRITEC/bitacorafritec";
+    protected array $processActualSequence = [1 => "marca", 2 => "year", 3 => "modelo", 5 => "motor", 12 => "part_type", 13 => "position", 16 => "part_number"];
     protected array $processTransformation = [1, 3, 5];
-    protected array $processRequired = [1, 2, 3, 5, 9, 13];
-    protected array $processTrim = [13];
+    protected array $processRequired = [1, 2, 3, 5, 12, 16];
+    protected array $processTrim = [16];
 
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
 
-        $this->outMessage("Inicia la captura de datos desde archivo BOSCH. Registro de logs independiente... ");
+        $this->outMessage("Inicia la captura de datos desde archivo FRITEC. Registro de logs independiente... ");
 
         //$this->bitacoraResgistartion = new InscribeBitacora($link, "transferencia");
         $countOk = 0;
         $countNotExists = 0;
         $countRepeats = 0;
-        BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: BOSH', '', '', '', '0', '0');
+        BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: FRITEC', '', '', '', '0', '0');
         foreach ($dataToProcess as $rowKey => $rowValue) {
             # code...
             $readMoment = \time();
@@ -149,7 +149,7 @@ class ReadBosch extends ReaderImplement
     {
         if ($key === 5 && empty($value))
             $value = "SIN MOTOR";
-        else if ($key === 10 && empty($value))
+        else if ($key === 13 && empty($value))
             $value = "SIN POSICION";
         else if (array_key_exists($key, $this->processRequired) && empty($value))
             $value = false;

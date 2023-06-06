@@ -13,17 +13,25 @@ class TestSigleton {
     public function testProductoSalav(mysqli $link) {
 
         $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
+<<<<<<< HEAD
         echo"singleton test";
         var_dump($productoSalv);
+=======
+>>>>>>> 3b34464aaeda1e3298fb269d55c03db90fb6fc1e
 
         if($productoSalv === 0){
             echo "<br /> No existe, se debe guardar";
             $insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
+<<<<<<< HEAD
         }
             
         
         else
             echo "No se guarda porque ya existe";
+=======
+        }   else
+            echo "No se guarda porque ya existe: {$productoSalv[0]['id']}";
+>>>>>>> 3b34464aaeda1e3298fb269d55c03db90fb6fc1e
         //$marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod
     }
 }

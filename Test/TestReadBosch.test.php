@@ -18,27 +18,46 @@ class TestReadBosch extends ReadBosch{
     public function testAddProductoSalav(mysqli $link) {
         echo "<br /> Running test...";
         $fileName ="testAdd.xlsx";
-        $marca="Porsche";
-        $modelo="Cayenne";
-        $anio_inicio="2003";
-        $anio_fin="2003"; 
-        $motor="4.5L"; 
-        $cil="V8";
-        $part_number="0986MF4220";
-        $position="";
-        $part_type="Air Filter";
-        $id_catprod=0;
-        $this->addCatalogoProductos($fileName, $link, $marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod);
+        $testMock = $this->getMock2();
+        $this->addCatalogoProductos($fileName,$link, $testMock["marca"], $testMock["modelo"], $testMock["anio_inicio"], $testMock["anio_fin"], $testMock["motor"], $testMock["cil"], $testMock["part_number"], $testMock["position"], $testMock["part_type"], $testMock["id_catprod"]);
         
     }
-
+    public function getMock1() : array {
+        return [
+            "marca"=>"Porsche",
+            "modelo"=>"Cayenne",
+            "anio_inicio"=>"2003",
+            "anio_fin"=>"2003", 
+            "motor"=>"4.5L", 
+            "cil"=>"V8",
+            "part_number"=>"0986MF4220",
+            "position"=>"",
+            "part_type"=>"Air Filter",
+            "id_catprod"=>0
+        ];
+    }
+    //motor:V6 181cid 3.0L
+    public function getMock2() : array {
+        return [
+            "marca"=>"Jaguar",
+            "modelo"=>"S-Type",
+            "anio_inicio"=>"2001",
+            "anio_fin"=>"2001", 
+            "motor"=>"Oil Filter", 
+            "cil"=>"0",
+            "part_number"=>"0986MF0044",
+            "position"=>"",
+            "part_type"=>"Engine Oil Filter",
+            "id_catprod"=>8064
+        ];
+    }
 }
 $dbConfig = new DbConfig();
 $link = $dbConfig->openConnect();
 
 echo "Se probara el test de ReadBosch...";
 $testReadBosch = new TestReadBosch();
-$testReadBosch->testValidateCatalogoProductos($link);
+$testReadBosch->testAddProductoSalav($link);
 
 $dbConfig->closeConnect($link);
 ?>
