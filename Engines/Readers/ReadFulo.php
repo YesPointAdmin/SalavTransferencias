@@ -38,6 +38,8 @@ class ReadFulo extends ReaderImplement
                         $this->writeBitacora("Se encontro con el Id catalogo_producto: {$idCatalogoProducto}", $fileName);
                         //Aqui data harcode
                         $dataToRetrieve["cil"] = "0";
+                        $dataToRetrieve["position"] = "central";
+                        $dataToRetrieve["part_type"] = "Refaccion";
                         if($this->addCatalogoProductos($fileName, $link, $dataToRetrieve["marca"], $dataToRetrieve["modelo"], $dataToRetrieve["anio_inicio"], 
                             $dataToRetrieve["anio_fin"], $dataToRetrieve["motor"], $dataToRetrieve["cil"], $dataToRetrieve["part_number"], $dataToRetrieve["position"], $dataToRetrieve["part_type"], $idCatalogoProducto)){                            
                             $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);

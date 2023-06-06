@@ -38,6 +38,9 @@ class ReadBujias extends ReaderImplement
                         $this->writeBitacora("Se encontro con el Id catalogo_producto: {$idCatalogoProducto}", $fileName);
                         //Aqui data harcode
                         $dataToRetrieve["cil"] = "0";
+                        $dataToRetrieve["position"] = "CENTRAL";
+                        $dataToRetrieve["part_type"] = "BUJIA";
+                        /* `Position`='CENTRAL' AND `Part_type`='BUJIA'" */
                         if($this->addCatalogoProductos($fileName, $link, $dataToRetrieve["marca"], $dataToRetrieve["modelo"], $dataToRetrieve["anio_inicio"], 
                             $dataToRetrieve["anio_fin"], $dataToRetrieve["motor"], $dataToRetrieve["cil"], $dataToRetrieve["part_number"], $dataToRetrieve["position"], $dataToRetrieve["part_type"], $idCatalogoProducto)){                            
                             $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);
@@ -149,6 +152,8 @@ class ReadBujias extends ReaderImplement
     {
         if ($key === 4 && empty($value))
             $value = "SIN MOTOR";
+        /* else if ($key === 5 && empty($value))
+            $value = "0000-0000"; */
         // else if ($key === 10 && empty($value))
             //   $value = "SIN POSICION";/* falta agregar variable estatica con el valor de central y posicion refaccion */
         else if (array_key_exists($key, $this->processRequired) && empty($value))
