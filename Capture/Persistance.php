@@ -173,8 +173,21 @@ class Persistance
         $countDatas = count($names) > 0;
         $assingmentArgs = "";
         if ($countDatas > 0) {
-            foreach ($names as $name)
-                $assingmentArgs .= "s";
+            foreach ($names as $name){
+                switch (\gettype($name)) {
+                    case 'integer':
+                        # code...
+                        $assingmentArgs .= "i";
+                        break;
+                    
+                    case 'string':
+                    default:
+                        # code...
+                        $assingmentArgs .= "s";
+                        break;
+                }
+
+            }
            
         }
         return $assingmentArgs;
