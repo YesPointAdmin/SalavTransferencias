@@ -3,6 +3,10 @@
 require_once('MyReadFilter.php');
 require_once('../Responses/ResultResponseData.php');
 require_once('./Readers/ReadBosch.php');
+require_once('./Readers/ReadFritec.php');
+require_once('./Readers/ReadFulo.php');
+require_once('./Readers/ReadBujias.php');
+require_once('./Readers/ReadInterfil.php');
 require('./Singleton/BitacoraSingleton.php');
 require('./Singleton/ProductosSingleton.php');
 
@@ -81,22 +85,30 @@ class TransferenciaProcess{
                         
                         case 'D':
                             $this->_log->outMessage("Se trata de un archivo Fritec. ");
+                            $readFritec = new ReadFritec(NULL, PROCESS_NAME);
+                            $readFritec->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"FRITEC","Se procesa correctamente.",true);
                             break;
                             
                         case 'L':
                             $this->_log->outMessage("Se trata de un archivo Fulo. ");
+                            $readFulo = new ReadFulo(NULL, PROCESS_NAME);
+                            $readFulo->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"FULO","Se procesa correctamente.",true);
                             break;
                         
                         case 'K':
                             $this->_log->outMessage("Se trata de un archivo Bujias. ");
+                            $readBujias = new ReadFulo(NULL, PROCESS_NAME);
+                            $readBujias->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"BUJIA","Se procesa correctamente.",true);
                             break;
                             
                         case 'I':
                         case 'J':
                             $this->_log->outMessage("Se trata de un archivo Interfil. ");
+                            $readInterfil = new ReadFulo(NULL, PROCESS_NAME);
+                            $readInterfil->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"INTERFIL","Se procesa correctamente.",true);
                             break;
                         
