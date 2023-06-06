@@ -1,7 +1,7 @@
 <?php
-define('DB_SERVER', '127.0.0.1:3306');
-define('DB_USERNAME', 'edi_db_user');
-define('DB_PASSWORD', 'test_pass12');
+define('DB_SERVER', 'localhost:3306');
+define('DB_USERNAME', 'prueba_salav2');
+define('DB_PASSWORD', '147258369');
 define('DB_NAME', 'salav_test');
 //require_once("GeneralLogger.php");
 
@@ -12,7 +12,7 @@ class DbConfig {
     private $_log;
     
     public function __construct(string $process = "general"){
-        $this->_log = new  GeneralLogger(\get_class($this),$process);
+        $this->_log = new GeneralLogger(\get_class($this),$process);
     }
     
     /* Attempt to connect to MySQL database */

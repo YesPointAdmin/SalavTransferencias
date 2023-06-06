@@ -11,7 +11,7 @@ class Persistance
     function __construct($connection, $process = "general")
     {
         $this->connection = $connection;
-        $this->_log = new  GeneralLogger(\get_class($this), $process);
+        $this->_log = new GeneralLogger(\get_class($this), $process);
     }
 
     public function prepareAndExecuteSentece(string $typeOf ="select", string $sqlQuery, mixed ...$names): mixed
@@ -24,7 +24,7 @@ class Persistance
         try {
             //$sentenceInitialized = mysqli_stmt_init($this->connection);
             if ($sentenceToExecute = mysqli_prepare($this->connection, $sqlQuery)) {
-                //$this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
+                $this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
                 $assigmentArgs = $this->getBindingNamesType( ...$names);
                 $this->_log->outMessage("Se insertaran los tipos: {$assigmentArgs}, Para las variables: ".json_encode($names));
                 if ($sentenceToExecute === "")
@@ -55,12 +55,18 @@ class Persistance
             case 'insert':
                 # code...
                 $this->_log->outMessage("Se ha ejecutado | {$sqlQuery} | correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
-                $result = true;
+                
+                $result = ($sentenceToExecute->affected_rows > 0)? true : false;
+
                 break;
             case 'select':
             default:
                 # code...
                 $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$sentenceToExecute->num_rows} ");
+                
+                if($sentenceToExecute->num_rows === 0)
+                    return 0;
+
                 // Paso 6: Obtener los resultados de la consulta
                 $resultData = mysqli_stmt_get_result($sentenceToExecute);
             
@@ -76,6 +82,8 @@ class Persistance
                         }
                         if(count($elementResult)>0)
                             $prepareResult[] = $elementResult;
+
+                        
                     }
                 }
                 $resultMessage = \json_encode($prepareResult);

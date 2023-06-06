@@ -8,17 +8,19 @@ class InscribeProductosSalav extends Persistance{
 
     public function generateInsertSentece() : string {
         return (!empty($this->tableName))?
-                    "INSERT INTO `{$this->tableName}`(`id`, `Marca`, `Modelo`, `Anio_inicio`, `Anio_fin`, `motor`, `Cil`, `Part_number`, `Position`, `Part_type`, `Id_catprod`) VALUES (NULL,'?','?','?','?','?','?','?','?','?','?');"
+                    "INSERT INTO `{$this->tableName}`(`id`, `Marca`, `Modelo`, `Anio_inicio`, `Anio_fin`, `motor`, `Cil`, `Part_number`, `Position`, `Part_type`, `Id_catprod`) VALUES (NULL,?,?,?,?,?,?,?,?,?,?);"
                     :"";
     }
     public function generateSelectSentece() : string {
         return (!empty($this->tableName))?
-                    "SELECT `id` FROM `{$this->tableName}` WHERE `Marca`='?' AND `Modelo`= '?' AND `Anio_inicio`='?' AND `Anio_fin`='?' AND `motor`='?' AND `Cil`='?' AND `Part_number`='?' AND `Position`='?' AND `Part_type`='?' AND `Id_catprod`='?';"
+                    "SELECT `id` FROM `{$this->tableName}` WHERE `Marca`=? AND `Modelo`= ? AND `Anio_inicio`=? AND `Anio_fin`=? AND `motor`=? AND `Cil`=? AND `Part_number`=? AND `Position`=? AND `Part_type`=? AND `Id_catprod`=?;"
                     :"";
                     
     }
 
-    public function executeQuery($typeOf = "select",mixed ...$data){
+    public function executeQuery($typeOf = "select",mixed ...$data) : mixed{
+        $result = false;
+        
         switch ($typeOf) {
             case 'insert':
                 # code...
@@ -33,9 +35,11 @@ class InscribeProductosSalav extends Persistance{
         }
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
         if(!empty($sqlSentence))
-            $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
+            $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
+
+        return $result;
     }
 
 }
