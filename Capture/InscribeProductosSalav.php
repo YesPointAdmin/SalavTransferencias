@@ -21,6 +21,7 @@ class InscribeProductosSalav extends Persistance{
     public function executeQuery($typeOf = "select",mixed ...$data) : mixed{
         $result = false;
         
+
         switch ($typeOf) {
             case 'insert':
                 # code...
@@ -34,8 +35,6 @@ class InscribeProductosSalav extends Persistance{
                 break;
         }
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
-        var_dump($data);
-        echo "<br />";
         
         if(!empty($sqlSentence))
             $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);

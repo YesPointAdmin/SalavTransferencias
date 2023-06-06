@@ -21,6 +21,7 @@ class InscribeCatalogoProductos extends Persistance{
 
     public function executeQuery($typeOf = 'select',mixed ...$data) : mixed {
         $result = false;
+        $this->_log->outDebugMessage("Part Number =>  " .$data[0]." type of: ".\gettype(($data[0])));
         //echo "<br /> Into Execute";
         switch ($typeOf) {
             case 'insert':

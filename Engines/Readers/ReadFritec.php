@@ -7,10 +7,10 @@ class ReadFritec extends ReaderImplement
 
     protected string $bitacoraBasePath = "../logs/BD_FRITEC/bitacorafritec";
     protected string $bitacoraPath = "../logs/BD_FRITEC/bitacorafritec";
-    protected array $processActualSequence = [1 => "marca", 2 => "year", 3 => "modelo", 5 => "motor", 12 => "part_type", 13 => "position", 16 => "part_number"];
-    protected array $processTransformation = [1, 3, 5];
+    protected array $processActualSequence = [1 => "marca", 2 => "year", 3 => "submodelo",4 => "modelo", 5 => "motor", 12 => "part_type", 13 => "position", 16 => "part_number"];
+    protected array $processTransformation = [1, 3, 5, 16];
     protected array $processRequired = [1, 2, 3, 5, 12, 16];
-    protected array $processTrim = [16];
+    protected array $processTrim = [];
 
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
@@ -114,31 +114,65 @@ class ReadFritec extends ReaderImplement
     }
 
     protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure): mixed
-    {
-
+    { 
         $value = $this->validateParticularData($key, $value);
 
         if ((array_key_exists($key, $this->processTransformation) || array_key_exists($key, $this->processTrim)) && !is_bool($value)) {
 
             if (!array_key_exists($key, $this->processTrim)) {
-                $value = str_replace(".", "", $value);
-                $value = str_replace(",", "", $value);
-                $value = str_replace("/", "", $value);
-                $value = str_replace("'", "", $value);
+
                 $value = str_replace('"', "", $value);
+                $value = str_replace("'", " ", $value);
+                $value = utf8_decode($value);
             }
             $value = trim($value);
             $value = ltrim($value);
             $value = rtrim($value);
         }
 
-        if ($key === 2) {
+        switch ($key) {
+            case 2:
+                # code...
+                $dataStructure["anio_inicio"] = $value;
+                $dataStructure["anio_fin"] = $value;
+                break;
+
+            case 5:
+                # code...
+                if($value === "SIN MOTOR"){
+                    $dataStructure[$this->processActualSequence[$key]] =$value ;
+                    $dataStructure["cil"]  = $this->validateParticularData($key + 1, "");
+                    
+                } else {
+                    $motorAndCil = explode(" ",$value);
+                    $dataStructure[$this->processActualSequence[$key]] =  $motorAndCil[0];
+                    $valueCil = $this->validateParticularData($key + 1, $motorAndCil[1]);
+                    $dataStructure["cil"] = $valueCil;
+
+                }
+                break;
+            
+            default:
+                # code...
+                $value = (!$value) ? $value : preg_replace($this->patron, "", strtoupper($value));
+                $dataStructure[$this->processActualSequence[$key]] = $value;
+                break;
+        }
+/*         if ($key === 2) {
+            $value = $this->validateParticularData($key, $value);
             $dataStructure["anio_inicio"] = $value;
             $dataStructure["anio_fin"] = $value;
-        } else {
-            $value = (!$value) ? $value : preg_replace($this->patron, "", strtoupper($value));
+        } if ($key === 5) {
+            $motorAndCil = explode(" ",$value);
+            $valueMotor = $this->validateParticularData($key, $motorAndCil[0]);
+            $dataStructure[$this->processActualSequence[$key]] =$valueMotor ;
+            $valueCil = $this->validateParticularData($key + 1, $motorAndCil[1]);
+            $dataStructure["cil"] = $valueCil;
+        }   else {
+            
+            $value = $this->validateParticularData($key, $value);
             $dataStructure[$this->processActualSequence[$key]] = $value;
-        }
+        } */
 
         //Decode/Encode error
 
@@ -149,10 +183,65 @@ class ReadFritec extends ReaderImplement
     {
         if ($key === 5 && empty($value))
             $value = "SIN MOTOR";
+        else if ($key === 6 && empty($value))
+            $value = "0";
         else if ($key === 13 && empty($value))
-            $value = "SIN POSICION";
+            $value = "SIN POSICION";        
+        else if ($key === 2 && empty($value))
+            $value = "0000";
         else if (array_key_exists($key, $this->processRequired) && empty($value))
             $value = false;
         return $value;
+    }
+
+    protected function retrieveDataStructure(string $fileName, int $rowKey, array $rowValue) : mixed {
+        $dataRow = "|";
+        $dataStrig = $rowValue[0] . ',' . $rowValue[1] . ',"' . $rowValue[2] . '","' . $rowValue[3];;
+/*         foreach($rowValue as $columnKey => $columnValue)
+            switch ($columnKey) {
+                case 0:
+                    # code...                
+                    $dataStrig .= $columnValue;
+                    break; 
+
+                case 2:
+                    # code...
+                    $dataStrig .= ',"'.$columnValue;
+                case 3:
+                    # code...
+                    $dataStrig .= '","'.$columnValue;
+                
+                case 1:
+                default:
+                    # code...
+                    $dataStrig .= ','.$columnValue;
+                    break;
+            }               
+         */
+        
+        
+        $dataStrig = str_replace(",", $dataRow, $dataStrig);
+        $explodeByData = explode($dataRow, $dataStrig);
+        return parent::retrieveDataStructure( $fileName, $rowKey, $explodeByData);
+/*         if(array_key_exists($columnKey,$this->processActualSequence)){
+                
+            $columnValue = utf8_decode($columnValue);
+            $dataRow .= "{$this->processActualSequence[$columnKey]}:{$columnValue}|";
+            $dataStructure=$this->transformDataIfItsNecesary($columnValue,$columnKey, $dataStructure);
+        } 
+        if($dataRow!=="|"&&count($dataStructure) > 0){
+            $this->writeBitacora("Fila Actual: {$rowKey} => {$dataRow}. ",$fileName);
+            if(in_array(false,$dataStructure)){
+                $this->writeBitacora("No se procesara puesto que almenos uno de los datos requeridos esta vacio: {$rowKey} => N/A. ",$fileName);
+                $dataStructure=false;
+            }
+                
+
+        } else {
+            $this->writeBitacora("Sin datos que procesar en la fila: {$rowKey} => N/A. ",$fileName);
+            $dataStructure=false;
+
+        }
+        return $dataStructure;*/
     }
 }

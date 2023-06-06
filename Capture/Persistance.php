@@ -16,8 +16,6 @@ class Persistance
 
     public function prepareAndExecuteSentece(string $typeOf ="select", string $sqlQuery, mixed ...$names): mixed
     {
-        var_dump($names);
-        echo "<br />";
 
         $sentenceToExecute = null;
         $result = true;
@@ -27,10 +25,14 @@ class Persistance
             if ($sentenceToExecute = mysqli_prepare($this->connection, $sqlQuery)) {
                 $this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
                 $assigmentArgs = $this->getBindingNamesType( ...$names);
-                $this->_log->outMessage("Se procesaran los tipos: {$assigmentArgs}, Para las variables: ".json_encode($names));
+                $this->_log->outMessage("Se procesaran los tipos: {$assigmentArgs}, Para las variables: ".$names[0]." type of ".\gettype($names[0]));
                 if ($sentenceToExecute === "")
                     throw new Exception("Error at binding types => " . mysqli_error($this->connection), 1);
-                mysqli_stmt_bind_param($sentenceToExecute,$assigmentArgs,...$names);
+                if(count($names) === 1)
+                    mysqli_stmt_bind_param($sentenceToExecute,$assigmentArgs,$names[0]);
+                else
+                    mysqli_stmt_bind_param($sentenceToExecute,$assigmentArgs,...$names);
+                
                 if ($result = mysqli_stmt_execute($sentenceToExecute)) {
 
                     //Switch affectedRows - NumRows
@@ -63,10 +65,16 @@ class Persistance
             case 'select':
             default:
                 // Paso 6: Obtener los resultados de la consulta
+                //echo "<br /> Excecuted Sentence";
+                $senteceToExecuteMsg = var_export($sentenceToExecute, true);
+                $this->_log->outDebugMessage(" Executed sentence: {$senteceToExecuteMsg}");
+                //var_dump($sentenceToExecute);  
                 $resultData = mysqli_stmt_get_result($sentenceToExecute);
-            
                 $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$resultData->num_rows} ");
-                
+                //echo "<br /> Excecuted result data";
+                $senteceToExecuteMsg = var_export($resultData, true);
+                $this->_log->outDebugMessage(" Executed result: {$senteceToExecuteMsg}");
+                //var_dump($resultData);
                 if($resultData->num_rows === 0)
                     return 0;
                 // Paso 7: Procesar los resultados
@@ -174,9 +182,7 @@ class Persistance
         $countDatas = count($names) > 0;
         $assingmentArgs = "";
         if ($countDatas > 0) {
-            foreach ($names as $name){
-                var_dump($name);
-                echo "<br />";
+            foreach ($names as $name)
                 switch (\gettype($name)) {
                     case 'integer':
                         # code...
@@ -190,7 +196,7 @@ class Persistance
                         break;
                 }
 
-            }
+            
            
         }
         return $assingmentArgs;
