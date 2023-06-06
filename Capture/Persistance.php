@@ -16,7 +16,8 @@ class Persistance
 
     public function prepareAndExecuteSentece(string $typeOf ="select", string $sqlQuery, mixed ...$names): mixed
     {
-
+        var_dump($names);
+        echo "<br />";
 
         $sentenceToExecute = null;
         $result = true;
@@ -174,6 +175,8 @@ class Persistance
         $assingmentArgs = "";
         if ($countDatas > 0) {
             foreach ($names as $name){
+                var_dump($name);
+                echo "<br />";
                 switch (\gettype($name)) {
                     case 'integer':
                         # code...

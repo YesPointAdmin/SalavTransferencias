@@ -34,8 +34,12 @@ class InscribeProductosSalav extends Persistance{
                 break;
         }
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
+        var_dump($data);
+        echo "<br />";
+        
         if(!empty($sqlSentence))
             $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
+            
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
 

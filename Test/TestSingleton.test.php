@@ -13,12 +13,12 @@ class TestSigleton {
     public function testProductoSalav(mysqli $link) {
 
         $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
-
+        echo"singleton test";
         var_dump($productoSalv);
 
         if($productoSalv === 0){
             echo "<br /> No existe, se debe guardar";
-            $insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter","");
+            $insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
         }
             
         
