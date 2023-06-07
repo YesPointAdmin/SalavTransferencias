@@ -76,7 +76,7 @@ class TransferenciaProcess{
 
                     //Determina mediante la cantidad de columnas en la primera hoja el tipo de procedimiento
                     switch ($highestRow["column"]) {
-                        //terminado
+                        //Terminado check Verificado
                         case 'U':
                             $this->_log->outMessage("Se trata de un archivo Bosch. ");
                             $readBosch = new ReadBosch(NULL,PROCESS_NAME);
@@ -90,21 +90,22 @@ class TransferenciaProcess{
                             $readFritec->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"FRITEC","Se procesa correctamente.",true);
                             break;
-                            //Terminado
+                            //Terminado check Verificado
                         case 'L':
                             $this->_log->outMessage("Se trata de un archivo Fulo. ");
                             $readFulo = new ReadFulo(NULL, PROCESS_NAME);
                             $readFulo->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"FULO","Se procesa correctamente.",true);
                             break;
-                        //Error en bitacora
+                        
                         case 'K':
+                            //Error en bitacora(crea bitacora en fulo), error al extraer part_number, modelo, marca
                             $this->_log->outMessage("Se trata de un archivo Bujias. ");
-                            $readBujias = new ReadBujias(NULL, PROCESS_NAME);
-                            $readBujias->readData($fileName, $link, $activeSheetData, $highestRow);
-                            $this->setOnResult($fileName,"BUJIA","Se procesa correctamente.",true);
+                            $readBujias = new ReadBujias(NULL,PROCESS_NAME);
+                            $readBujias->readData($fileName,$link,$activeSheetData,$highestRow);
+                            $this->setOnResult($fileName,"BUJIAS","Se procesa correctamente.",true);
                             break;
-                            //Terminado
+                            //Terminado check Verificado
                         case 'I':
                         case 'J':
                             $this->_log->outMessage("Se trata de un archivo Interfil. ");

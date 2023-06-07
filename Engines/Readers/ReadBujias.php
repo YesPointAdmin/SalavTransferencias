@@ -7,7 +7,7 @@ class ReadBujias extends ReaderImplement
 
     protected string $bitacoraBasePath = "../logs/BD_BUJIAS/bitacorabujias";
     protected string $bitacoraPath = "../logs/BD_BUJIAS/bitacorabujias";
-    protected array $processActualSequence = [0 => "marca", 5 => "year", 1 => "modelo", 4 => "motor", /* 9 => "part_type", 10 => "position", */ 9 => "part_number"];
+    protected array $processActualSequence = [0 => "marca", 5 => "year", 1 => "submodelo", 2 => "modelo", 4 => "motor", /* 9 => "part_type", 10 => "position", */ 9 => "part_number"];
     protected array $processTransformation = [0, 1, 4];
     protected array $processRequired = [0, 5, 1, 4, 9];
     protected array $processTrim = [9];
@@ -40,7 +40,6 @@ class ReadBujias extends ReaderImplement
                         $dataToRetrieve["cil"] = "0";
                         $dataToRetrieve["position"] = "CENTRAL";
                         $dataToRetrieve["part_type"] = "BUJIA";
-                        /* `Position`='CENTRAL' AND `Part_type`='BUJIA'" */
                         if($this->addCatalogoProductos($fileName, $link, $dataToRetrieve["marca"], $dataToRetrieve["modelo"], $dataToRetrieve["anio_inicio"], 
                             $dataToRetrieve["anio_fin"], $dataToRetrieve["motor"], $dataToRetrieve["cil"], $dataToRetrieve["part_number"], $dataToRetrieve["position"], $dataToRetrieve["part_type"], $idCatalogoProducto)){                            
                             $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);
@@ -152,10 +151,8 @@ class ReadBujias extends ReaderImplement
     {
         if ($key === 4 && empty($value))
             $value = "SIN MOTOR";
-        /* else if ($key === 5 && empty($value))
-            $value = "0000-0000"; */
-        // else if ($key === 10 && empty($value))
-            //   $value = "SIN POSICION";/* falta agregar variable estatica con el valor de central y posicion refaccion */
+        /* else if ($key === 10 && empty($value))
+            $value = "SIN POSICION"; */
         else if (array_key_exists($key, $this->processRequired) && empty($value))
             $value = false;
         return $value;

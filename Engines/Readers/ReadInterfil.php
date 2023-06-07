@@ -15,7 +15,7 @@ class ReadInterfil extends ReaderImplement
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
 
-        $this->outMessage("Inicia la captura de datos desde archivo BOSCH. Registro de logs independiente... ");
+        $this->outMessage("Inicia la captura de datos desde archivo INTERFIL. Registro de logs independiente... ");
 
         //$this->bitacoraResgistartion = new InscribeBitacora($link, "transferencia");
         $countOk = 0;
