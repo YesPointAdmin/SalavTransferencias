@@ -32,6 +32,7 @@ class ReadFulo extends ReaderImplement
                 if ($dataToRetrieve = $this->retrieveDataStructure($fileName, $rowKey, $rowValue)) {
 
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
+                    $this->writeBitacora("Datos recuperados var_export. ".var_export($dataToRetrieve), $fileName);
                     //Validar en catalogo_producto por part_number
                     if ($idCatalogoProducto = $this->validateCatalogoProductos($fileName, $dataToRetrieve['part_number'], $link)) {
 
@@ -143,21 +144,40 @@ class ReadFulo extends ReaderImplement
             $value = rtrim($value);
         }
 
+        $regex = "[^-|null]";
         switch ($key) {
             case 5:
-                $dataStructure["anio_inicio"] = $value;
-                $dataStructure["anio_fin"] = $value;
+                //separar anios
+                $separadaAnio = explode("-", $value);
+                switch (count($separadaAnio)) {
+                    case 1:
+                        $dataStructure["anio_inicio"] = $separadaAnio[0];
+                        $dataStructure["anio_fin"] = $separadaAnio[0];
+                        break;
+                    case 2:
+                        $dataStructure["anio_inicio"] = $separadaAnio[0];
+                        $dataStructure["anio_fin"] = $separadaAnio[1];
+                        break;
+
+                    default:
+                        $dataStructure["anio_inicio"] = 0000;
+                        $dataStructure["anio_fin"] = 0000;
+                        break;
+                }
+
                 break;
 
+                // "/[^-|null]/"
             case 6:
             case 7:
             case 8:
             case 9:
-                $this->writeBitacora("Tipo value: ", gettype($value));
-                if ($value !== "-" || !empty($value)) 
+                //$this->writeBitacora("Tipo value: ", gettype($value));
+                //$value = string;
+                if ($value !== $regex)
                     $dataStructure[$this->processActualSequence[$key]] = $value;
-                
-                
+
+
                 break;
 
             default:
