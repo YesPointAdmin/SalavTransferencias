@@ -196,7 +196,7 @@ class ReadFritec extends ReaderImplement
 
     protected function retrieveDataStructure(string $fileName, int $rowKey, array $rowValue) : mixed {
         $dataRow = "|";
-        $dataStrig = $rowValue[0] . ',' . $rowValue[1] . ',"' . $rowValue[2] . '","' . $rowValue[3];;
+        $dataStrig = $rowValue[0] . ',' . $rowValue[1] . ',"' . $rowValue[2] . '","' . $rowValue[3];
 /*         foreach($rowValue as $columnKey => $columnValue)
             switch ($columnKey) {
                 case 0:
