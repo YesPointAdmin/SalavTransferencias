@@ -7,9 +7,9 @@ class ReadFulo extends ReaderImplement
 
     protected string $bitacoraBasePath = "../logs/BD_FULO/bitacorafulo";
     protected string $bitacoraPath = "../logs/BD_FULO/bitacorafulo";
-    protected array $processActualSequence = [1 => "marca", 5 => "year", 2 => "modelo", 4 => "motor", /* 7 => "part_type", */ /* 10 => "position", */ 6 => "part_number"];
+    protected array $processActualSequence = [1 => "marca", 5 => "year", 2 => "modelo", 4 => "motor", 6 => "part_number", 7 => "part_number", 8 => "part_number", 9 => "part_number"];
     protected array $processTransformation = [1, 2, 4];
-    protected array $processRequired = [1,5, 2, 4, 6];
+    protected array $processRequired = [1, 5, 2, 4, 6];
     protected array $processTrim = [6];
 
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
@@ -28,10 +28,11 @@ class ReadFulo extends ReaderImplement
             if ((!is_array($rowValue) || gettype($rowValue) !== 'array')) {
                 $typeOfRow = gettype($rowValue);
                 $this->writeBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}", $fileName);
-            } else if($rowKey > 0) {
+            } else if ($rowKey > 0) {
                 if ($dataToRetrieve = $this->retrieveDataStructure($fileName, $rowKey, $rowValue)) {
 
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
+                    $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToRetrieve, true), $fileName);
                     //Validar en catalogo_producto por part_number
                     if ($idCatalogoProducto = $this->validateCatalogoProductos($fileName, $dataToRetrieve['part_number'], $link)) {
 
@@ -40,8 +41,20 @@ class ReadFulo extends ReaderImplement
                         $dataToRetrieve["cil"] = "0";
                         $dataToRetrieve["position"] = "central";
                         $dataToRetrieve["part_type"] = "Refaccion";
-                        if($this->addCatalogoProductos($fileName, $link, $dataToRetrieve["marca"], $dataToRetrieve["modelo"], $dataToRetrieve["anio_inicio"], 
-                            $dataToRetrieve["anio_fin"], $dataToRetrieve["motor"], $dataToRetrieve["cil"], $dataToRetrieve["part_number"], $dataToRetrieve["position"], $dataToRetrieve["part_type"], $idCatalogoProducto)){                            
+                        if ($this->addCatalogoProductos(
+                            $fileName,
+                            $link,
+                            $dataToRetrieve["marca"],
+                            $dataToRetrieve["modelo"],
+                            $dataToRetrieve["anio_inicio"],
+                            $dataToRetrieve["anio_fin"],
+                            $dataToRetrieve["motor"],
+                            $dataToRetrieve["cil"],
+                            $dataToRetrieve["part_number"],
+                            $dataToRetrieve["position"],
+                            $dataToRetrieve["part_type"],
+                            $idCatalogoProducto
+                        )) {
                             $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);
                             $countOk += 1;
                         } else {
@@ -52,13 +65,10 @@ class ReadFulo extends ReaderImplement
                         $this->writeBitacora("No se encontro el numero de parte en catalogo_producto", $fileName);
                         $countNotExists += 1;
                     }
-
-
                 }
             }
         }
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Termina el proceso de lectura', '', $countNotExists, $countRepeats, '', $countOk);
-
     }
 
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link): mixed
@@ -92,21 +102,21 @@ class ReadFulo extends ReaderImplement
         $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData(...$data);
         //$productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
         $result = true;
-        if($productoSalv === 0){
+        if ($productoSalv === 0) {
             //echo "<br /> No existe, se debe guardar";
-            $dataToString =json_encode($data);
-    
+            $dataToString = json_encode($data);
+
             $this->writeBitacora("Iniciara insercion en ProductoSalav : {$dataToString} ", $fileName);
             $insertData = ProductosSingleton::getInstance($link)->addRowToProductosSalav(...$data);
             if (is_bool($insertData))
                 $result = $insertData;
-            else if(is_int($insertData)){
+            else if (is_int($insertData)) {
                 $this->writeBitacora("Se ha insertado correctamente ProductoSalav : {$insertData} ", $fileName);
                 $result = $insertData;
-            }   else
+            } else
                 $result = false;
             //$insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
-        }   else{
+        } else {
             //var_dump($productoSalv);
             $this->writeBitacora("Ya existe en ProductosSalav, no se guardara. Id: {$productoSalv[0]['id']} ", $fileName);
             $result = false;
@@ -133,13 +143,52 @@ class ReadFulo extends ReaderImplement
             $value = ltrim($value);
             $value = rtrim($value);
         }
+        // /^$/
+        $regex = "[ ]";
+        switch ($key) {
+            case 5:
+                //separar anios
+                $separadaAnio = explode("-", $value);
+                switch (count($separadaAnio)) {
+                    case 1:
+                        $dataStructure["anio_inicio"] = $separadaAnio[0];
+                        $dataStructure["anio_fin"] = $separadaAnio[0];
+                        break;
+                    case 2:
+                        $dataStructure["anio_inicio"] = $separadaAnio[0];
+                        $dataStructure["anio_fin"] = $separadaAnio[1];
+                        break;
 
-        if ($key === 5) {
-            $dataStructure["anio_inicio"] = $value;
-            $dataStructure["anio_fin"] = $value;
-        } else {
-            $value = (!$value) ? $value : preg_replace($this->patron, "", strtoupper($value));
-            $dataStructure[$this->processActualSequence[$key]] = $value;
+                    default:
+                        $dataStructure["anio_inicio"] = 0000;
+                        $dataStructure["anio_fin"] = 0000;
+                        break;
+                }
+
+                break;
+
+                // "/[^-|null]/"
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                //$this->writeBitacora("Tipo value: ", gettype($value));
+                //$value = string;
+                if(!empty($value))
+                    if($value !== "-")
+                        $dataStructure[$this->processActualSequence[$key]][] = $value;
+                
+               /*  if ($value !== $regex)
+                    $dataStructure[$this->processActualSequence[$key]] = $value; */
+
+
+                break;
+
+            default:
+                # code...
+                $value = (!$value) ? $value : preg_replace($this->patron, "", strtoupper($value));
+                $dataStructure[$this->processActualSequence[$key]] = $value;
+                break;
         }
 
         //Decode/Encode error
@@ -151,8 +200,8 @@ class ReadFulo extends ReaderImplement
     {
         if ($key === 2 && empty($value))
             $value = "SIN MOTOR";
-       // else if ($key === 10 && empty($value))
-         //   $value = "SIN POSICION";/* falta agregar variable estatica con el valor de central y posicion refaccion */
+        // else if ($key === 10 && empty($value))
+        //   $value = "SIN POSICION";/* falta agregar variable estatica con el valor de central y posicion refaccion */
         else if (array_key_exists($key, $this->processRequired) && empty($value))
             $value = false;
         return $value;
