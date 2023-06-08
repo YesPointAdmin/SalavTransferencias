@@ -65,8 +65,8 @@ class Persistance
             default:
                 // Paso 6: Obtener los resultados de la consulta
                 //echo "<br /> Excecuted Sentence";
-                $senteceToExecuteMsg = var_export($sentenceToExecute, true);
-                $this->_log->outDebugMessage(" Executed sentence: {$senteceToExecuteMsg}");
+/*                 $senteceToExecuteMsg = var_export($sentenceToExecute, true);
+                $this->_log->outDebugMessage(" Executed sentence: {$senteceToExecuteMsg}"); */
                 //var_dump($sentenceToExecute);  
                 $resultData = mysqli_stmt_get_result($sentenceToExecute);
 
@@ -180,8 +180,7 @@ class Persistance
         $assingmentArgs = "";
         if ($countDatas > 0) {
             foreach ($names as $name) {
-                var_dump($name);
-                echo "<br />";
+
                 switch (\gettype($name)) {
                     case 'integer':
                         # code...

@@ -11,6 +11,7 @@ class ReadFritec extends ReaderImplement
     protected array $processTransformation = [1, 3, 5, 16];
     protected array $processRequired = [1, 2, 3, 5, 12, 16];
     protected array $processTrim = [];
+    public string $fileName;
 
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
@@ -113,13 +114,14 @@ class ReadFritec extends ReaderImplement
         return $result;
     }
 
-    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure): mixed
+    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure, string $fileName = "no_filename"): mixed
     { 
         $value = $this->validateParticularData($key, $value);
+        $this->writeBitacora("Value key: {$key} Value export: ".var_export($value,true), $fileName);
 
-        if ((array_key_exists($key, $this->processTransformation) || array_key_exists($key, $this->processTrim)) && !is_bool($value)) {
-
-            if (!array_key_exists($key, $this->processTrim)) {
+        if ((in_array($key, $this->processTransformation) || in_array($key, $this->processTrim)) && !is_bool($value)) {
+            
+            if (!in_array($key, $this->processTrim)) {
 
                 $value = str_replace('"', "", $value);
                 $value = str_replace("'", " ", $value);
@@ -128,6 +130,7 @@ class ReadFritec extends ReaderImplement
             $value = trim($value);
             $value = ltrim($value);
             $value = rtrim($value);
+            $this->writeBitacora("Value transformed key: {$key} Value transformed export: ".var_export($value,true), $fileName);
         }
 
         switch ($key) {

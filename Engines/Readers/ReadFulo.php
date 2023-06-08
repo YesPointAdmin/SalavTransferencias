@@ -34,36 +34,39 @@ class ReadFulo extends ReaderImplement
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
                     $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToRetrieve, true), $fileName);
                     //Validar en catalogo_producto por part_number
-                    if ($idCatalogoProducto = $this->validateCatalogoProductos($fileName, $dataToRetrieve['part_number'], $link)) {
-
-                        $this->writeBitacora("Se encontro con el Id catalogo_producto: {$idCatalogoProducto}", $fileName);
-                        //Aqui data harcode
-                        $dataToRetrieve["cil"] = "0";
-                        $dataToRetrieve["position"] = "central";
-                        $dataToRetrieve["part_type"] = "Refaccion";
-                        if ($this->addCatalogoProductos(
-                            $fileName,
-                            $link,
-                            $dataToRetrieve["marca"],
-                            $dataToRetrieve["modelo"],
-                            $dataToRetrieve["anio_inicio"],
-                            $dataToRetrieve["anio_fin"],
-                            $dataToRetrieve["motor"],
-                            $dataToRetrieve["cil"],
-                            $dataToRetrieve["part_number"],
-                            $dataToRetrieve["position"],
-                            $dataToRetrieve["part_type"],
-                            $idCatalogoProducto
-                        )) {
-                            $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);
-                            $countOk += 1;
+                    foreach($dataToRetrieve["part_number"] as $partKey => $part_number){
+                        if ($idCatalogoProducto = $this->validateCatalogoProductos($fileName, $part_number, $link)) {
+    
+                            $this->writeBitacora("Se encontro con el Id catalogo_producto: {$idCatalogoProducto}", $fileName);
+                            //Aqui data harcode
+                            $dataToRetrieve["cil"] = "0";
+                            $dataToRetrieve["position"] = "central";
+                            $dataToRetrieve["part_type"] = "Refaccion";
+                            if ($this->addCatalogoProductos(
+                                $fileName,
+                                $link,
+                                $dataToRetrieve["marca"],
+                                $dataToRetrieve["modelo"],
+                                $dataToRetrieve["anio_inicio"],
+                                $dataToRetrieve["anio_fin"],
+                                $dataToRetrieve["motor"],
+                                $dataToRetrieve["cil"],
+                                $part_number,
+                                $dataToRetrieve["position"],
+                                $dataToRetrieve["part_type"],
+                                $idCatalogoProducto
+                            )) {
+                                $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);
+                                $countOk += 1;
+                            } else {
+                                $this->writeBitacora("Se completa, no se captura fila: {$rowKey}", $fileName);
+                                $countRepeats += 1;
+                            }
                         } else {
-                            $this->writeBitacora("Se completa, no se captura fila: {$rowKey}", $fileName);
-                            $countRepeats += 1;
+                            $this->writeBitacora("No se encontro el numero de parte en catalogo_producto", $fileName);
+                            $countNotExists += 1;
                         }
-                    } else {
-                        $this->writeBitacora("No se encontro el numero de parte en catalogo_producto", $fileName);
-                        $countNotExists += 1;
+
                     }
                 }
             }
@@ -125,14 +128,14 @@ class ReadFulo extends ReaderImplement
         return $result;
     }
 
-    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure): mixed
+    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure, string $fileName = "no_filename"): mixed
     {
 
         $value = $this->validateParticularData($key, $value);
 
-        if ((array_key_exists($key, $this->processTransformation) || array_key_exists($key, $this->processTrim)) && !is_bool($value)) {
+        if ((in_array($key, $this->processTransformation) || in_array($key, $this->processTrim)) && !is_bool($value)) {
 
-            if (!array_key_exists($key, $this->processTrim)) {
+            if (!in_array($key, $this->processTrim)) {
                 $value = str_replace(".", "", $value);
                 $value = str_replace(",", "", $value);
                 $value = str_replace("/", "", $value);
