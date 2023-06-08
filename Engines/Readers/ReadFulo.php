@@ -28,7 +28,7 @@ class ReadFulo extends ReaderImplement
             if ((!is_array($rowValue) || gettype($rowValue) !== 'array')) {
                 $typeOfRow = gettype($rowValue);
                 $this->writeBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}", $fileName);
-            } else if ($rowKey > 0) {
+            } else if ($rowKey > 8) {
                 if ($dataToRetrieve = $this->retrieveDataStructure($fileName, $rowKey, $rowValue)) {
 
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
