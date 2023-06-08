@@ -2,6 +2,7 @@
 
 require_once('MyReadFilter.php');
 require_once('../Responses/ResultResponseData.php');
+require_once('Readers/ReadQuimicos.php');
 require_once('Readers/ReadBosch.php');
 require_once('Readers/ReadFritec.php');
 require_once('Readers/ReadFulo.php');
@@ -70,6 +71,9 @@ class TransferenciaProcess{
                 case 4:
                 case 5:
                     $this->_log->outMessage("Se trata seguramente de archivo de quimicos. ");
+                    $readQuimicos = new ReadQuimicos(NULL, PROCESS_NAME);
+                    $readQuimicos->readDataQuimicos($fileName,$link,$activeSheetData,$totalDeHojas,$highestRow);
+                    $this->setOnResult($fileName,"QUIMICOS","Se procesa correctamente.",true);
                     break;
                 
                 default:
