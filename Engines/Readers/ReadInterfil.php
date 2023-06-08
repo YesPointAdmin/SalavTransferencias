@@ -114,14 +114,14 @@ class ReadInterfil extends ReaderImplement
         return $result;
     }
 
-    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure): mixed
+    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure, string $fileName = "no_filename"): mixed
     {
 
         $value = $this->validateParticularData($key, $value);
 
-        if ((array_key_exists($key, $this->processTransformation) || array_key_exists($key, $this->processTrim)) && !is_bool($value)) {
+        if ((in_array($key, $this->processTransformation) || in_array($key, $this->processTrim)) && !is_bool($value)) {
 
-            if (!array_key_exists($key, $this->processTrim)) {
+            if (!in_array($key, $this->processTrim)) {
                 $value = str_replace(".", "", $value);
                 $value = str_replace(",", "", $value);
                 $value = str_replace("/", "", $value);
@@ -152,7 +152,7 @@ class ReadInterfil extends ReaderImplement
             $value = "SIN MOTOR";
         /* else if ($key === 10 && empty($value))
             $value = "SIN POSICION"; */ /* falta agregar variable posicion estatica con el valor de refaccion */
-        else if (array_key_exists($key, $this->processRequired) && empty($value))
+        else if (in_array($key, $this->processRequired) && empty($value))
             $value = false;
         return $value;
     }

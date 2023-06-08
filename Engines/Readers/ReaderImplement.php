@@ -57,7 +57,7 @@ class ReaderImplement extends GeneralLogger{
                 
 				$columnValue = utf8_decode($columnValue);
                 $dataRow .= "{$this->processActualSequence[$columnKey]}:{$columnValue}|";
-                $dataStructure=$this->transformDataIfItsNecesary($columnValue,$columnKey, $dataStructure);
+                $dataStructure=$this->transformDataIfItsNecesary($columnValue,$columnKey, $dataStructure, $fileName);
             }
         }
 
@@ -77,7 +77,7 @@ class ReaderImplement extends GeneralLogger{
         return $dataStructure;
     }
 
-    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure) : mixed {
+    protected function transformDataIfItsNecesary(mixed $value, int $key, array $dataStructure, string $fileName = "no_filename") : mixed {
         return false;
     }
 

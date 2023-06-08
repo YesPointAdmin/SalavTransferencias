@@ -2,13 +2,13 @@
 
 require_once('MyReadFilter.php');
 require_once('../Responses/ResultResponseData.php');
-require_once('./Readers/ReadBosch.php');
-require_once('./Readers/ReadFritec.php');
-require_once('./Readers/ReadFulo.php');
-require_once('./Readers/ReadBujias.php');
-require_once('./Readers/ReadInterfil.php');
-require('./Singleton/BitacoraSingleton.php');
-require('./Singleton/ProductosSingleton.php');
+require_once('Readers/ReadBosch.php');
+require_once('Readers/ReadFritec.php');
+require_once('Readers/ReadFulo.php');
+require_once('Readers/ReadBujias.php');
+require_once('Readers/ReadInterfil.php');
+require('Singleton/BitacoraSingleton.php');
+require('Singleton/ProductosSingleton.php');
 
 class TransferenciaProcess{
     private $_log;
