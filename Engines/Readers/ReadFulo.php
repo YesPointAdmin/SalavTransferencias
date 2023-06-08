@@ -32,7 +32,7 @@ class ReadFulo extends ReaderImplement
                 if ($dataToRetrieve = $this->retrieveDataStructure($fileName, $rowKey, $rowValue)) {
 
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
-                    $this->writeBitacora("Datos recuperados var_export. ".var_export($dataToRetrieve), $fileName);
+                    $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToRetrieve, true), $fileName);
                     //Validar en catalogo_producto por part_number
                     if ($idCatalogoProducto = $this->validateCatalogoProductos($fileName, $dataToRetrieve['part_number'], $link)) {
 
@@ -143,8 +143,8 @@ class ReadFulo extends ReaderImplement
             $value = ltrim($value);
             $value = rtrim($value);
         }
-
-        $regex = "[^-|null]";
+        // /^$/
+        $regex = "[ ]";
         switch ($key) {
             case 5:
                 //separar anios
@@ -174,8 +174,12 @@ class ReadFulo extends ReaderImplement
             case 9:
                 //$this->writeBitacora("Tipo value: ", gettype($value));
                 //$value = string;
-                if ($value !== $regex)
-                    $dataStructure[$this->processActualSequence[$key]] = $value;
+                if(!empty($value))
+                    if($value !== "-")
+                        $dataStructure[$this->processActualSequence[$key]][] = $value;
+                
+               /*  if ($value !== $regex)
+                    $dataStructure[$this->processActualSequence[$key]] = $value; */
 
 
                 break;
