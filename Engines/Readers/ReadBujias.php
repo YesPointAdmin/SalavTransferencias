@@ -153,7 +153,7 @@ class ReadBujias extends ReaderImplement
             $value = "SIN MOTOR";
         /* else if ($key === 10 && empty($value))
             $value = "SIN POSICION"; */
-        else if (array_key_exists($key, $this->processRequired) && empty($value))
+        else if (in_array($key, $this->processRequired) && empty($value))
             $value = false;
         return $value;
     }

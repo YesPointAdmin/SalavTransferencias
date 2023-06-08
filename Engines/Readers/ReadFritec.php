@@ -192,7 +192,7 @@ class ReadFritec extends ReaderImplement
             $value = "SIN POSICION";        
         else if ($key === 2 && empty($value))
             $value = "0000";
-        else if (array_key_exists($key, $this->processRequired) && empty($value))
+        else if (in_array($key, $this->processRequired) && empty($value))
             $value = false;
         return $value;
     }
