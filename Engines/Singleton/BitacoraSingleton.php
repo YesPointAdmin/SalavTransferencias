@@ -23,7 +23,7 @@ class BitacoraSingleton
 
     public function addRowToBitacora($fileName,mixed ...$values)
     {
-        $result = $this->bitacoraWritter->executeQuery("insert",$fileName,...$values);
+        $result = $this->bitacoraWritter->executeQuery("insert", $fileName, $fileName,...$values);
         $this->bitacoraWritter->cleanMemoryAfterQuery($result);
     }
 

@@ -9,7 +9,7 @@ class InscribeCatalogoLubricantes extends Persistance{
 
     public function generateInsertSentece() : string {
         return (!empty($this->tableName))?
-                    "INSERT INTO `{$this->tableName}`(`id`, `marca`, `modelo`,`anio_inicio`,`anio_fin`, `motor`, `viscocidad`, `servicio`, `homologacion`, `inventario_id`, `sucirsal_id`) VALUES (NULL,?,?,?,?,?,?,?,?,'1','1');"
+                    "INSERT INTO `{$this->tableName}`(`id`, `marca`, `modelo`,`anio_inicio`,`anio_fin`, `motor`, `viscocidad`, `servicio`, `homologacion`, `inventario_id`, `sucursal_id`) VALUES (NULL,?,?,?,?,?,?,?,?,?,?);"
                     :"";
     }
 
@@ -19,7 +19,7 @@ class InscribeCatalogoLubricantes extends Persistance{
                     :"";
     }
 
-    public function executeQuery($typeOf = "select",mixed ...$data) : mixed{
+    public function executeQuery($typeOf = "select", string $fileName, mixed ...$data) : mixed{
         $result = false;
 
         switch ($typeOf) {
@@ -37,7 +37,7 @@ class InscribeCatalogoLubricantes extends Persistance{
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
         
         if(!empty($sqlSentence))
-            $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
+            $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence, $fileName, ...$data);
             
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");

@@ -14,13 +14,16 @@ class ReadLubricantes extends ReaderImplement{
     protected array $lubricantesSequence = [8=>"0_60k",9=>"0_60k",10=>"61k_100k",11=>"61k_100k",12=>"101k_150k",13=>"101k_150k",14=>"151k_200k",15=>"151k_200k",16=>"200k_o_mas",17=>"200k_o_mas"];
     protected array $frenosInyeccionAndRefrigeranteSequence = [28=>"fluido_de_frenos",30=>"fluido_de_frenos",31=>"0_200k_refrigerante",32=>"0_200k_refrigerante",33=>"200k_o_mas_refrigerante",34=>"200k_o_mas_refrigerante",36=>"aditivo_sistema_inyeccion",37=>"aditivo_sistema_inyeccion"];
     protected array $gasolinaAndGrasasSequence = [38 => "aditivo_gasolina", 39 => "grasa_chasi", 40 => "grasa_juntas", 41 => "grasa_baleros"];
-    protected array $processTransformation = [1, 3, 5];
-    protected array $processRequired = [1, 2, 3, 5];
-    protected array $processTrim = [13];
+    protected array $processTransformation = [1, 2, 4, 5];
+    protected array $processRequired = [1, 2, 5];
+    protected array $processTrim = [];
     protected InscribeCatalogoLubricantes $inscribeLubricantes;
     protected InscribeCatalogoOpcion $inscribeOpcion;
     //Se agrega inscribe nuevo
     protected InscribeCatalogoGrasaBaleros $inscribeGrasaBaleros;
+    protected int $countOk = 0;
+    protected int $countNotExists = 0;
+    protected int $countRepeats = 0;
     
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
@@ -28,9 +31,6 @@ class ReadLubricantes extends ReaderImplement{
         $this->outMessage("Inicia la captura de datos desde archivo Lubricantes. Registro de logs independiente... ");
 
         //$this->bitacoraResgistartion = new InscribeBitacora($link, "transferencia");
-        $countOk = 0;
-        $countNotExists = 0;
-        $countRepeats = 0;
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: Lubricantes', '', '', '', '0', '0');
         $this->inscribeLubricantes = new InscribeCatalogoLubricantes($link, PROCESS_NAME);
         $this->inscribeOpcion = new InscribeCatalogoOpcion($link, PROCESS_NAME);
@@ -75,31 +75,41 @@ class ReadLubricantes extends ReaderImplement{
                 } */
             }
         }
-        BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Termina el proceso de lectura', '', $countNotExists, $countRepeats, '', $countOk);
+        BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Termina el proceso de lectura', '', $this->countNotExists, $this->countRepeats, '', $this->countOk);
 
     }
 
     protected function resolveCaptureAndValidations(mysqli $link, array $dataStructure, string $fileName){
 
-        $getLubIfExists = $this->inscribeLubricantes->executeQuery('select',$dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"]);
+        $this->writeBitacora("Test lubricantes dataStructure export: ".var_export($dataStructure,true), $fileName);
+        
+        $getLubIfExists = $this->inscribeLubricantes->executeQuery('select', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"]);
 
         $this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
-        
-        $getOpcionIfExists = $this->inscribeOpcion->executeQuery('select',$dataStructure["0_60k"][0],$dataStructure["0_60k"][1],$dataStructure["61k_100k"][0],$dataStructure["61k_100k"][1],$dataStructure["101k_150k"][0],$dataStructure["101k_150k"][1],$dataStructure["151k_200k"][0],$dataStructure["151k_200k"][1],$dataStructure["200k_o_mas"][0],$dataStructure["200k_o_mas"][1],$dataStructure["fluido_de_frenos"][0],$dataStructure["fluido_de_frenos"][1],$dataStructure["0_200k_refrigerante"][0],$dataStructure["0_200k_refrigerante"][1],$dataStructure["200k_o_mas_refrigerante"][0],$dataStructure["200k_o_mas_refrigerante"][1],$dataStructure["aditivo_sistema_inyeccion"][0],$dataStructure["aditivo_sistema_inyeccion"][1]);
 
-        $this->writeBitacora("Test lubricantes getOpcionIfExists export: ".var_export($getOpcionIfExists,true), $fileName);
+        if($getLubIfExists !== 0)
+            $this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+
+        $insertedLub = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1');
+        $this->writeBitacora("Test lubricantes insertedLub export: ".var_export($insertedLub,true), $fileName);
+
+        //$getOpcionIfExists = $this->inscribeOpcion->executeQuery('select',$dataStructure["0_60k"][0],$dataStructure["0_60k"][1],$dataStructure["61k_100k"][0],$dataStructure["61k_100k"][1],$dataStructure["101k_150k"][0],$dataStructure["101k_150k"][1],$dataStructure["151k_200k"][0],$dataStructure["151k_200k"][1],$dataStructure["200k_o_mas"][0],$dataStructure["200k_o_mas"][1],$dataStructure["fluido_de_frenos"][0],$dataStructure["fluido_de_frenos"][1],$dataStructure["0_200k_refrigerante"][0],$dataStructure["0_200k_refrigerante"][1],$dataStructure["200k_o_mas_refrigerante"][0],$dataStructure["200k_o_mas_refrigerante"][1],$dataStructure["aditivo_sistema_inyeccion"][0],$dataStructure["aditivo_sistema_inyeccion"][1]);
+
+        //$this->writeBitacora("Test lubricantes getOpcionIfExists export: ".var_export($getOpcionIfExists,true), $fileName);
 
         //Se agrega inscribe nuevo
-        $getGrasaBalExists = $this->inscribeGrasaBaleros->executeQuery('select',$dataStructure["grasa_baleros"]);
+/*         $getGrasaBalExists = $this->inscribeGrasaBaleros->executeQuery('select',$dataStructure["grasa_baleros"]);
 
-        $this->writeBitacora("Test lubricantes getGrasaBalExists export: ".var_export($getGrasaBalExists,true), $fileName);
+        $this->writeBitacora("Test lubricantes getGrasaBalExists export: ".var_export($getGrasaBalExists,true), $fileName); */
+
+
 
     }
 
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link): mixed
     {
         $this->writeBitacora("Se consulta Catalogo de Producto el No. De Parte: {$part_number} ", $fileName);
-        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($part_number);
+        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($fileName, $part_number);
         //$resultData = false;
 
         if (is_bool($resultData))
@@ -210,6 +220,8 @@ class ReadLubricantes extends ReaderImplement{
             $value = "SIN MOTOR";
         else if (in_array($key, $this->processRequired) && empty($value))
             $value = false;
+        else if(empty($value))
+            $value = "";
         return $value;
     }
 

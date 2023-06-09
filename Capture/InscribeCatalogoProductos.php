@@ -19,9 +19,9 @@ class InscribeCatalogoProductos extends Persistance{
                     
     }
 
-    public function executeQuery($typeOf = 'select',mixed ...$data) : mixed {
+    public function executeQuery($typeOf = 'select', string $fileName, mixed ...$data) : mixed {
         $result = false;
-        $this->_log->outDebugMessage("Part Number =>  " .$data[0]." type of: ".\gettype(($data[0])));
+        //$this->_log->outDebugMessage("Part Number =>  " .$data[0]." type of: ".\gettype(($data[0])));
         //echo "<br /> Into Execute";
         switch ($typeOf) {
             case 'insert':
@@ -40,7 +40,7 @@ class InscribeCatalogoProductos extends Persistance{
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
 
         if(!empty($sqlSentence))
-           $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence,...$data);
+           $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence, $fileName, ...$data);
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
         
