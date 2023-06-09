@@ -85,11 +85,15 @@ class ReadLubricantes extends ReaderImplement{
         
         $getLubIfExists = $this->inscribeLubricantes->executeQuery('select', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"]);
 
-        $this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+        //$this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
 
-        if($getLubIfExists !== 0)
-            $this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+        if($getLubIfExists !== 0){
+            //$this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+            $this->writeBitacora("Existe en catalogo  lubricantes: {$getLubIfExists[0]['id']}", $fileName);
+            return;
+        }
 
+        $this->writeBitacora("Se registrara en catalogo  lubricantes: ", $fileName);
         $insertedLub = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1');
         $this->writeBitacora("Test lubricantes insertedLub export: ".var_export($insertedLub,true), $fileName);
 
