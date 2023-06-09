@@ -28,7 +28,7 @@ class ReadQuimicos extends ReaderImplement
 
 
         foreach ($dataToProcess as $rowKey => $rowValue) {
-            //$this->writeBitacora("Datos recuperados var_export. " . var_export($dataToProcess, true), $fileName);
+            $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToProcess, true), $fileName);
             //$this->writeBitacora("Datos recuperados var_export. " . var_export($rowKey, true), $fileName);
             //$this->writeBitacora("Datos recuperados var_export. " . var_export($rowValue, true), $fileName);
             # code...
@@ -79,7 +79,7 @@ class ReadQuimicos extends ReaderImplement
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link): mixed
     {
         $this->writeBitacora("Se consulta Catalogo de Quimicos el No. De Parte: {$part_number} ", $fileName);
-        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($part_number);
+        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($fileName, $part_number);
         //$resultData = false;
 
         if (is_bool($resultData))
@@ -104,14 +104,14 @@ class ReadQuimicos extends ReaderImplement
 
     public function addCatalogoQuimicos(string $fileName, mysqli $link, mixed ...$data): mixed
     {
-        $QuimicosSalav = $this->quimicosValidate->executeQuery("select", ...$data);
+        $QuimicosSalav = $this->quimicosValidate->executeQuery("select", $fileName, ...$data);
         $result = true;
         if ($QuimicosSalav === 0) {
             //echo "<br /> No existe, se debe guardar";
             $dataToString = json_encode($data);
 
             $this->writeBitacora("Iniciara insercion en QuimicosSalav : {$dataToString} ", $fileName);
-            $insertData = $this->quimicosValidate->executeQuery("insert", ...$data);
+            $insertData = $this->quimicosValidate->executeQuery("insert", $fileName, ...$data);
             if (is_bool($insertData))
                 $result = $insertData;
             else if (is_int($insertData)) {

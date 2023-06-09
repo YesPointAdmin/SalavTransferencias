@@ -15,7 +15,6 @@ class ProductosSingleton
         $this->productosQueryng = new InscribeCatalogoProductos($link, "transferencia");
 
         $this->productosValidate = new InscribeProductosSalav($link, "transferencia");
-
     }
 
     public static function getInstance(mysqli $link)
@@ -27,19 +26,20 @@ class ProductosSingleton
         return self::$instance;
     }
 
-    public function getRowFromCatalogoProductosByPartNumber(string $part_number): mixed
+    public function getRowFromCatalogoProductosByPartNumber(string $fileName, string $part_number): mixed
     {
-        return $this->productosQueryng->executeQuery("select", $part_number);
+        return $this->productosQueryng->executeQuery("select", $fileName, $part_number);
     }
 
-    public function addRowToProductosSalav(string $marca = "", string $modelo = "", string $anio_inicio = "", string $anio_fin = "", string $motor = "", string $cil = "", string $part_number = "", string $position = "", string $part_type = "", int $id_catprod = 0): mixed
+    public function addRowToProductosSalav(string $fileName, string $marca = "", string $modelo = "", string $anio_inicio = "", string $anio_fin = "", string $motor = "", string $cil = "", string $part_number = "", string $position = "", string $part_type = "", int $id_catprod = 0): mixed
     {
-        return $this->productosValidate->executeQuery("insert", $marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod);
+
+        return $this->productosValidate->executeQuery("insert", $fileName, $marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod);
     }
 
-    public function getRowFromProductosSalavByData(string $marca = "", string $modelo = "", string $anio_inicio = "", string $anio_fin = "", string $motor = "", string $cil = "", string $part_number = "", string $position = "", string $part_type = "", int $id_catprod = 0): mixed
+    public function getRowFromProductosSalavByData(string $fileName, string $marca = "", string $modelo = "", string $anio_inicio = "", string $anio_fin = "", string $motor = "", string $cil = "", string $part_number = "", string $position = "", string $part_type = "", int $id_catprod = 0): mixed
     {
-        return $this->productosValidate->executeQuery("select", $marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod);
+        return $this->productosValidate->executeQuery("select", $fileName, $marca, $modelo, $anio_inicio, $anio_fin, $motor, $cil, $part_number, $position, $part_type, $id_catprod);
     }
 
 

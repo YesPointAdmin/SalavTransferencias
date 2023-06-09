@@ -14,8 +14,13 @@ class Persistance
         $this->_log = new GeneralLogger(\get_class($this), $process);
     }
 
-    public function prepareAndExecuteSentece(string $typeOf = "select", string $sqlQuery, mixed ...$names): mixed
+    public function prepareAndExecuteSentece(string $typeOf = "select", string $sqlQuery, string $fileName, mixed ...$names): mixed
     {
+        //var_dump($names);
+        //echo "<br />";
+        $senteceToExecuteMsg = var_export($names, true);
+        $this->_log->outDebugMessage(" Data to excecute: {$senteceToExecuteMsg}");
+        $this->_log->outDebugMessage(" Data to sqlQuery: {$sqlQuery}");
 
         $sentenceToExecute = null;
         $result = true;
@@ -37,6 +42,9 @@ class Persistance
                 throw new Exception("Error at Prepare Sentence => " . mysqli_error($this->connection), 1);
         } catch (Exception $e) {
             $this->_log->outErrorMessage("Error al ejecutar en '{$this->tableName}' error: \n " . $e->getMessage());
+            if($this->tableName !== 'bitacora')
+                BitacoraSingleton::getInstance($this->connection)->addRowToBitacora($fileName, "Error al ejecutar en '{$this->tableName}' ","error: " . $e->getMessage(), '', '', '0', '0');
+
             $result = false;
         } finally {
 
@@ -167,7 +175,8 @@ class Persistance
         $assingmentArgs = "";
         if ($countDatas > 0) {
             foreach ($names as $name) {
-
+                
+                $this->_log->outDebugMessage(" Data to excecute name: {$name} gettype: ".\gettype($name));
                 switch (\gettype($name)) {
                     case 'integer':
                         # code...

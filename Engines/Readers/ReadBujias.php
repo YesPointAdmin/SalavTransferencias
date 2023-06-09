@@ -64,7 +64,7 @@ class ReadBujias extends ReaderImplement
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link): mixed
     {
         $this->writeBitacora("Se consulta Catalogo de Producto el No. De Parte: {$part_number} ", $fileName);
-        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($part_number);
+        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($fileName, $part_number);
         //$resultData = false;
 
         if (is_bool($resultData))
@@ -89,7 +89,7 @@ class ReadBujias extends ReaderImplement
 
     public function addCatalogoProductos(string $fileName, mysqli $link, mixed ...$data): mixed
     {
-        $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData(...$data);
+        $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData($fileName, ...$data);
         //$productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
         $result = true;
         if($productoSalv === 0){
@@ -97,7 +97,7 @@ class ReadBujias extends ReaderImplement
             $dataToString =json_encode($data);
     
             $this->writeBitacora("Iniciara insercion en ProductoSalav : {$dataToString} ", $fileName);
-            $insertData = ProductosSingleton::getInstance($link)->addRowToProductosSalav(...$data);
+            $insertData = ProductosSingleton::getInstance($link)->addRowToProductosSalav($fileName, ...$data);
             if (is_bool($insertData))
                 $result = $insertData;
             else if(is_int($insertData)){
@@ -134,14 +134,33 @@ class ReadBujias extends ReaderImplement
             $value = rtrim($value);
         }
 
-        if ($key === 5) {
-            $dataStructure["anio_inicio"] = $value;
-            $dataStructure["anio_fin"] = $value;
-        } else {
-            $value = (!$value) ? $value : preg_replace($this->patron, "", strtoupper($value));
-            $dataStructure[$this->processActualSequence[$key]] = $value;
-        }
+       switch ($key) {
+            case 5:
+                $separadaAnio = explode("-", $value);
+                switch (count($separadaAnio)) {
+                    case 1:
+                        $dataStructure["anio_inicio"] = $separadaAnio[0];
+                        $dataStructure["anio_fin"] = $separadaAnio[0];
+                        break;
+                    case 2:
+                        $dataStructure["anio_inicio"] = $separadaAnio[0];
+                        $dataStructure["anio_fin"] = $separadaAnio[1];
+                        break;
 
+                    default:
+                        $dataStructure["anio_inicio"] = 0000;
+                        $dataStructure["anio_fin"] = 0000;
+                        break;
+                }
+
+                break;
+
+            default:
+                # code...
+                $value = (!$value) ? $value : preg_replace($this->patron, "", strtoupper($value));
+                $dataStructure[$this->processActualSequence[$key]] = $value;
+                break;
+       }
         //Decode/Encode error
 
         return $dataStructure;
