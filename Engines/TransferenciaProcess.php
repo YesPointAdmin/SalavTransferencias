@@ -7,6 +7,7 @@ require_once('Readers/ReadFritec.php');
 require_once('Readers/ReadFulo.php');
 require_once('Readers/ReadBujias.php');
 require_once('Readers/ReadInterfil.php');
+require_once('Readers/ReadLubricantes.php');
 require('Singleton/BitacoraSingleton.php');
 require('Singleton/ProductosSingleton.php');
 
@@ -116,6 +117,8 @@ class TransferenciaProcess{
                         
                         case 'AQ':
                             $this->_log->outMessage("Se trata de un archivo Lubricantes. ");
+                            $readInterfil = new ReadLubricantes(NULL, PROCESS_NAME);
+                            $readInterfil->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"LUBRICANTES","Se procesa correctamente.",true);
                             break;
 

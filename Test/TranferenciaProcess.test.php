@@ -17,9 +17,15 @@ require ("../Config/DbConfig.php");
 class TestTransferenciaProcess extends TransferenciaProcess{
     public string $pathToTestFile_Fritec = "./files/fritec/Dacomsa_Fritec_FULL_20230121.xlsx";
     public string $pathToTestFile_Fulo = "./files/fulo/CATALOGO DE APLICACIONES AUTO FULO_20230121.xlsx";
+    public string $pathToTestFile_Lub = "./files/lubricantes/LibroLubricantes.xlsx";
     public function readFileByTypeTest(mysqli $link){
+<<<<<<< HEAD
         $fileName = \basename($this->pathToTestFile_Fritec);
         $this->readFileByType($this->pathToTestFile_Fritec, $fileName, $link);
+=======
+        $fileName = \basename($this->pathToTestFile_Lub);
+        $this->readFileByType($this->pathToTestFile_Lub, $fileName, $link);
+>>>>>>> acc880f56c2c24d432e6ae9e64edbbec7c07c87c
     }
 }
 

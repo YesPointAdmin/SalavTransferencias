@@ -81,6 +81,26 @@ class ReaderImplement extends GeneralLogger{
         return false;
     }
 
+    public function getExplodeAnio(mixed $value, array $dataStructure) : mixed{
+        $separadaAnio = explode("-", $value);
+        switch (count($separadaAnio)) {
+            case 1:
+                $dataStructure["anio_inicio"] = $separadaAnio[0];
+                $dataStructure["anio_fin"] = $separadaAnio[0];
+                break;
+            case 2:
+                $dataStructure["anio_inicio"] = $separadaAnio[0];
+                $dataStructure["anio_fin"] = $separadaAnio[1];
+                break;
+
+            default:
+                $dataStructure["anio_inicio"] = 0000;
+                $dataStructure["anio_fin"] = 0000;
+                break;
+        }
+        return $dataStructure;
+    }
+
 }
 
 ?>
