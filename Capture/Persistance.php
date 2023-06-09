@@ -16,14 +16,11 @@ class Persistance
 
     public function prepareAndExecuteSentece(string $typeOf = "select", string $sqlQuery, mixed ...$names): mixed
     {
-        //var_dump($names);
-        //echo "<br />";
 
         $sentenceToExecute = null;
         $result = true;
         $data = null;
         try {
-            //$sentenceInitialized = mysqli_stmt_init($this->connection);
             if ($sentenceToExecute = mysqli_prepare($this->connection, $sqlQuery)) {
                 $this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
                 $assigmentArgs = $this->getBindingNamesType(...$names);
@@ -33,7 +30,6 @@ class Persistance
                 mysqli_stmt_bind_param($sentenceToExecute, $assigmentArgs, ...$names);
                 if ($result = mysqli_stmt_execute($sentenceToExecute)) {
 
-                    //Switch affectedRows - NumRows
                     $result = $this->retrieveResult($typeOf,  $sqlQuery, $sentenceToExecute);
                 } else
                     throw new Exception("Error at execute Query => " . mysqli_error($this->connection), 1);
@@ -54,7 +50,6 @@ class Persistance
         $result = null;
         switch ($typeOf) {
             case 'insert':
-                # code...
                 $this->_log->outMessage("Se ha ejecutado | {$sqlQuery} | correctamente sobre {$this->tableName}. Afected Rows: {$sentenceToExecute->affected_rows} ");
 
                 $result = ($sentenceToExecute->affected_rows > 0) ? (isset($sentenceToExecute->insert_id) ? $sentenceToExecute->insert_id : true) : false;
@@ -63,26 +58,18 @@ class Persistance
 
             case 'select':
             default:
-                // Paso 6: Obtener los resultados de la consulta
-                //echo "<br /> Excecuted Sentence";
-/*                 $senteceToExecuteMsg = var_export($sentenceToExecute, true);
-                $this->_log->outDebugMessage(" Executed sentence: {$senteceToExecuteMsg}"); */
-                //var_dump($sentenceToExecute);  
                 $resultData = mysqli_stmt_get_result($sentenceToExecute);
 
                 $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$resultData->num_rows} ");
 
-                //echo "<br /> Excecuted result data";
                 $senteceToExecuteMsg = var_export($resultData, true);
                 $this->_log->outDebugMessage(" Executed result: {$senteceToExecuteMsg}");
-                //var_dump($resultData);
+                
                 if ($resultData->num_rows === 0)
                     return 0;
                     
-                // Paso 7: Procesar los resultados
                 $prepareResult = array();
                 while ($row = mysqli_fetch_assoc($resultData)) {
-                    //echo "id: " . $row["id"] . " - part_number: " . $row["part_number"] . "<br>";
                     if (is_array($row)) {
                         $elementResult = [];
                         foreach ($row as $rowKey => $rowValue) {

@@ -23,12 +23,13 @@ class ReadBosch extends ReaderImplement
         $countRepeats = 0;
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: BOSH', '', '', '', '0', '0');
         foreach ($dataToProcess as $rowKey => $rowValue) {
+            $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToProcess, true), $fileName);
             # code...
             $readMoment = \time();
             if ((!is_array($rowValue) || gettype($rowValue) !== 'array')) {
                 $typeOfRow = gettype($rowValue);
                 $this->writeBitacora("time:{$readMoment}|row:{$rowKey}|status:'ERROR'|conflict:'No se puede procesar la informacion en fila'|row_type:{$typeOfRow}", $fileName);
-            } else if($rowKey > 0) {
+            } else if ($rowKey > 0) {
                 if ($dataToRetrieve = $this->retrieveDataStructure($fileName, $rowKey, $rowValue)) {
 
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
@@ -38,8 +39,20 @@ class ReadBosch extends ReaderImplement
                         $this->writeBitacora("Se encontro con el Id catalogo_producto: {$idCatalogoProducto}", $fileName);
                         //Aqui data harcode
                         $dataToRetrieve["cil"] = "0";
-                        if($this->addCatalogoProductos($fileName, $link, $dataToRetrieve["marca"], $dataToRetrieve["modelo"], $dataToRetrieve["anio_inicio"], 
-                            $dataToRetrieve["anio_fin"], $dataToRetrieve["motor"], $dataToRetrieve["cil"], $dataToRetrieve["part_number"], $dataToRetrieve["position"], $dataToRetrieve["part_type"], $idCatalogoProducto)){                            
+                        if ($this->addCatalogoProductos(
+                            $fileName,
+                            $link,
+                            $dataToRetrieve["marca"],
+                            $dataToRetrieve["modelo"],
+                            $dataToRetrieve["anio_inicio"],
+                            $dataToRetrieve["anio_fin"],
+                            $dataToRetrieve["motor"],
+                            $dataToRetrieve["cil"],
+                            $dataToRetrieve["part_number"],
+                            $dataToRetrieve["position"],
+                            $dataToRetrieve["part_type"],
+                            $idCatalogoProducto
+                        )) {
                             $this->writeBitacora("Se completa la captura de la fila en ProductosSalav: {$rowKey}", $fileName);
                             $countOk += 1;
                         } else {
@@ -50,13 +63,10 @@ class ReadBosch extends ReaderImplement
                         $this->writeBitacora("No se encontro el numero de parte en catalogo_producto", $fileName);
                         $countNotExists += 1;
                     }
-
-
                 }
             }
         }
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Termina el proceso de lectura', '', $countNotExists, $countRepeats, '', $countOk);
-
     }
 
     protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link): mixed
@@ -90,21 +100,21 @@ class ReadBosch extends ReaderImplement
         $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData(...$data);
         //$productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
         $result = true;
-        if($productoSalv === 0){
+        if ($productoSalv === 0) {
             //echo "<br /> No existe, se debe guardar";
-            $dataToString =json_encode($data);
-    
+            $dataToString = json_encode($data);
+
             $this->writeBitacora("Iniciara insercion en ProductoSalav : {$dataToString} ", $fileName);
             $insertData = ProductosSingleton::getInstance($link)->addRowToProductosSalav(...$data);
             if (is_bool($insertData))
                 $result = $insertData;
-            else if(is_int($insertData)){
+            else if (is_int($insertData)) {
                 $this->writeBitacora("Se ha insertado correctamente ProductoSalav : {$insertData} ", $fileName);
                 $result = $insertData;
-            }   else
+            } else
                 $result = false;
             //$insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
-        }   else{
+        } else {
             //var_dump($productoSalv);
             $this->writeBitacora("Ya existe en ProductosSalav, no se guardara. Id: {$productoSalv[0]['id']} ", $fileName);
             $result = false;

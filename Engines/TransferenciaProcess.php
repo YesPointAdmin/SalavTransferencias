@@ -73,7 +73,10 @@ class TransferenciaProcess{
                 case 5:
                     $this->_log->outMessage("Se trata seguramente de archivo de quimicos. ");
                     $readQuimicos = new ReadQuimicos(NULL, PROCESS_NAME);
-                    $readQuimicos->readDataQuimicos($fileName,$link,$activeSheetData,$totalDeHojas,$highestRow);
+                    for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++){
+                        $hojaActuales = $spreadsheet->getSheet($indiceHoja)->toArray();
+                        $readQuimicos->readDataQuimicos($fileName,$link,$hojaActuales,$totalDeHojas,$highestRow);
+                    }
                     $this->setOnResult($fileName,"QUIMICOS","Se procesa correctamente.",true);
                     break;
                 
@@ -121,8 +124,8 @@ class TransferenciaProcess{
                         
                         case 'AQ':
                             $this->_log->outMessage("Se trata de un archivo Lubricantes. ");
-                            $readInterfil = new ReadLubricantes(NULL, PROCESS_NAME);
-                            $readInterfil->readData($fileName, $link, $activeSheetData, $highestRow);
+                            $readLubricantes = new ReadLubricantes(NULL, PROCESS_NAME);
+                            $readLubricantes->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"LUBRICANTES","Se procesa correctamente.",true);
                             break;
 
