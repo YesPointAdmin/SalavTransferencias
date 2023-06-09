@@ -18,8 +18,8 @@ class TestTransferenciaProcess extends TransferenciaProcess{
     public string $pathToTestFile_Fritec = "./files/fritec/Dacomsa_Fritec_FULL_20230121.xlsx";
     public string $pathToTestFile_Fulo = "./files/fulo/CATALOGO DE APLICACIONES AUTO FULO_20230121.xlsx";
     public function readFileByTypeTest(mysqli $link){
-        $fileName = \basename($this->pathToTestFile_Fulo);
-        $this->readFileByType($this->pathToTestFile_Fulo, $fileName, $link);
+        $fileName = \basename($this->pathToTestFile_Fritec);
+        $this->readFileByType($this->pathToTestFile_Fritec, $fileName, $link);
     }
 }
 
