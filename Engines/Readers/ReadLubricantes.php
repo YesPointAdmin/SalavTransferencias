@@ -5,6 +5,9 @@ require_once('../Capture/InscribeCatalogoLubricantes.php');
 require_once('../Capture/InscribeCatalogoOpcion.php');
 //Se agrega inscribe nuevo
 require_once('../Capture/InscribeCatalogoGrasaBaleros.php');
+require_once('../Capture/InscribeCatalogoGrasaJuntas.php');
+require_once('../Capture/InscribeCatalogoGrasaChasi.php');
+require_once('../Capture/InscribeCatalogoAditivoGasolina.php');
 
 class ReadLubricantes extends ReaderImplement{
     
@@ -24,6 +27,9 @@ class ReadLubricantes extends ReaderImplement{
     protected int $countOk = 0;
     protected int $countNotExists = 0;
     protected int $countRepeats = 0;
+    protected InscribeCatalogoGrasaJuntas $inscribeGrasaJuntas;
+    protected InscribeCatalogoGrasaChasi $inscribeGrasaChasi;
+    protected InscribeCatalogoAditivoGasolina $InscribeAditivoGasolina;
     
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
@@ -36,6 +42,9 @@ class ReadLubricantes extends ReaderImplement{
         $this->inscribeOpcion = new InscribeCatalogoOpcion($link, PROCESS_NAME);
         //Se agrega inscribe nuevo
         $this->inscribeGrasaBaleros = new InscribeCatalogoGrasaBaleros($link, PROCESS_NAME);
+        $this->inscribeGrasaJuntas = new InscribeCatalogoGrasaJuntas($link, PROCESS_NAME);
+        $this->inscribeGrasaChasi = new InscribeCatalogoGrasaChasi($link, PROCESS_NAME);
+        $this->InscribeAditivoGasolina = new InscribeCatalogoAditivoGasolina($link, PROCESS_NAME);
 
         foreach ($dataToProcess as $rowKey => $rowValue) {
             # code...
@@ -107,6 +116,9 @@ class ReadLubricantes extends ReaderImplement{
         $this->writeBitacora("Test lubricantes getGrasaBalExists export: ".var_export($getGrasaBalExists,true), $fileName); */
 
 
+
+        //$getGrasaJuntasExist = $this->inscribeGrasaJuntas>executeQuery('select',$dataStructure["grasa_juntas"]);
+        //$this->writeBitacora("Test lubricantes getGrasajuntasExists export: ".var_export($getGrasaJuntasExists,true), $fileName);
 
     }
 

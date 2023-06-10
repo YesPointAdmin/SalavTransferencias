@@ -8,7 +8,7 @@ class ReadFritec extends ReaderImplement
     protected string $bitacoraBasePath = "../logs/BD_FRITEC/bitacorafritec";
     protected string $bitacoraPath = "../logs/BD_FRITEC/bitacorafritec";
     protected array $processActualSequence = [1 => "marca", 2 => "year", 3 => "submodelo",4 => "modelo", 5 => "motor", 12 => "part_type", 13 => "position", 16 => "part_number"];
-    protected array $processTransformation = [1, 3, 5, 16];
+    protected array $processTransformation = [1, 3, 4, 5, 12, 13, 16];
     protected array $processRequired = [1, 2, 3, 5, 12, 16];
     protected array $processTrim = [];
     public string $fileName;
@@ -122,7 +122,7 @@ class ReadFritec extends ReaderImplement
         if ((in_array($key, $this->processTransformation) || in_array($key, $this->processTrim)) && !is_bool($value)) {
             
             if (!in_array($key, $this->processTrim)) {
-
+                
                 $value = str_replace('"', "", $value);
                 $value = str_replace("'", " ", $value);
                 $value = utf8_decode($value);

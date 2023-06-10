@@ -26,7 +26,7 @@ class ProductosSingleton
         return self::$instance;
     }
 
-    public function getRowFromCatalogoProductosByPartNumber(string $part_number, string $fileName) : mixed
+    public function getRowFromCatalogoProductosByPartNumber(string $fileName, string $part_number) : mixed
     {
         return $this->productosQueryng->executeQuery("select",$fileName,$part_number);
     }
