@@ -1,4 +1,14 @@
 {
+    "name": "salavrefaccion/salavtransfertencia",
+    "description": "",
+    "autoload": {
+        "psr-4": {
+            "App\\": "/"
+        },
+        "classmap": [
+            "/"
+        ]   
+    },
     "require": {
         "phpoffice/phpspreadsheet": "^1.23"
     }

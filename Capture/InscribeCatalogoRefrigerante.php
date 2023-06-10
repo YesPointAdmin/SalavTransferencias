@@ -3,19 +3,19 @@
 require_once('Persistance.php');
 require_once('../Config/GeneralLogger.php');
 
-class InscribeCatalogoOpcion extends Persistance{
+class InscribeCatalogoRefrigerante extends Persistance{
 
-    protected string $tableName = 'opcion';
+    protected string $tableName = 'refrigerante';
 
     public function generateInsertSentece() : string {
         return (!empty($this->tableName))?
-                    "INSERT INTO `{$this->tableName}`(`id`, `opcion_1`, `opcion_2`) VALUES (NULL,?,?);"
+                    "INSERT INTO `{$this->tableName}`(`id`, `0_200k_id`, `200k_o_mas_id`) VALUES (NULL,?,?);"
                     :"";
     }
 
     public function generateSelectSentece() : string {
         return (!empty($this->tableName))?
-                    "SELECT `opcion_1`, `opcion_2` FROM `{$this->tableName}` WHERE `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND `opcion_1`=? AND`opcion_2`=? AND `opcion_2`=? AND `opcion_2`=? AND `opcion_2`=? AND `opcion_2`=? AND `opcion_2`=? AND `opcion_2`=? AND `opcion_2`=? AND `opcion_2`=?"
+                    "SELECT * FROM `{$this->tableName}` ;"
                     :"";
     }
 
