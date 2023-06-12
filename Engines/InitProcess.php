@@ -21,10 +21,9 @@ todo el archivo tiene funciones de lectura de excel, la cuales se encargan de in
 require ('../vendor/autoload.php');
 
 use App\Config\GeneralLogger;
-
-require ('../Config/DbConfig.php');
-require_once('TransferenciaProcess.php');
-require_once('../Responses/GenericResponse.php');
+use App\Config\DbConfig;
+use App\Engines\TransferenciaProcess;
+use App\Responses\GenericResponse;
 
 $_log = new GeneralLogger("InitProcess",PROCESS_NAME);
 $_log->outMessage("Se inicia el proceso: ".PROCESS_NAME);

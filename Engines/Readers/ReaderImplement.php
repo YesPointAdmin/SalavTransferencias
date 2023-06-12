@@ -1,7 +1,9 @@
 <?php
-
-//require_once("../Capture/InscribeBitacora.php");
+//use App\Capture;
+namespace App\Engines\Readers;
 use App\Config\GeneralLogger;
+use mysqli;
+//require_once("../Capture/InscribeBitacora.php");
 
 class ReaderImplement extends GeneralLogger{
 
@@ -55,12 +57,12 @@ class ReaderImplement extends GeneralLogger{
             
             if(array_key_exists($columnKey,$this->processActualSequence)){
                 
-				$columnValue = utf8_decode($columnValue);
+				$columnValue = utf8_encode($columnValue);
                 $dataRow .= "{$this->processActualSequence[$columnKey]}:{$columnValue}|";
                 $dataStructure=$this->transformDataIfItsNecesary($columnValue,$columnKey, $dataStructure, $fileName);
             }
         }
-
+       // $this->writeBitacora("Datos recuperados var_export. " . var_export($dataStructure, true), $fileName);
         if($dataRow!=="|"&&count($dataStructure) > 0){
             $this->writeBitacora("Fila Actual: {$rowKey} => {$dataRow}. ",$fileName);
             if(in_array(false,$dataStructure)){
@@ -70,6 +72,7 @@ class ReaderImplement extends GeneralLogger{
                 
 
         } else {
+           // $this->writeBitacora("Datos recuperados var_export. " . var_export($dataRow, true), $fileName);
             $this->writeBitacora("Sin datos que procesar en la fila: {$rowKey} => N/A. ",$fileName);
             $dataStructure=false;
 

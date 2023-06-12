@@ -1,6 +1,6 @@
 <?php
+namespace App\Capture;
 
-require_once('Persistance.php');
 require_once('../Config/GeneralLogger.php');
 
 class InscribeCatalogoGrasaJuntas extends Persistance{

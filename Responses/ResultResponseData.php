@@ -1,6 +1,6 @@
 <?php
-
-require_once("../Interfaces/ResultInterface.php");
+namespace App\Responses;
+use App\Interfaces\ResultInterface;
 
 class ResultResponseData implements ResultInterface{
 

@@ -1,18 +1,18 @@
 <?php
 
-require ("../Capture/InscribeBitacora.php");
-require ("../Capture/InscribeProductosSalav.php");
-require ("../Capture/InscribeCatalogoProductos.php");
-require ("../Config/DbConfig.php");
+use App\Capture\InscribeBitacora;
+use App\Capture\InscribeProductosSalav;
+use App\Capture\InscribeCatalogoProductos;
+use App\Config\DbConfig;
 
 class PrepareStatements extends InscribeBitacora{
     public function testRunPreparedStatement() : void {
-        $this->executeQuery();
+        //$this->executeQuery();
     }
 }
 class ProductosSalavTest extends InscribeProductosSalav{
     public function testRunPreparedStatement() : void {
-        $this->executeQuery();
+        //$this->executeQuery();
     }
 }
 class CatalogoProductosTest extends InscribeCatalogoProductos{

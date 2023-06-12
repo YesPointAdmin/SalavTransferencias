@@ -1,7 +1,6 @@
 <?php
-require_once('../Engines/Readers/ReadBosch.php');
-require ("../Config/DbConfig.php");
-require ("../Engines/Singleton/ProductosSingleton.php");
+use App\Config\DbConfig;
+use App\Engines\Readers\ReadBosch;
 
 class TestReadBosch extends ReadBosch{
 

@@ -1,16 +1,17 @@
 <?php
-
-require_once('MyReadFilter.php');
-require_once('../Responses/ResultResponseData.php');
-require_once('Readers/ReadBosch.php');
-require_once('Readers/ReadFritec.php');
-require_once('Readers/ReadFulo.php');
-require_once('Readers/ReadBujias.php');
-require_once('Readers/ReadInterfil.php');
-require_once('Readers/ReadLubricantes.php');
-require('Singleton/BitacoraSingleton.php');
-require('Singleton/ProductosSingleton.php');
+namespace App\Engines;
 use App\Config\GeneralLogger;
+use App\Engines\Readers\ReadQuimicos;
+use App\Engines\Readers\ReadBosch;
+use App\Engines\Readers\ReadFritec;
+use App\Engines\Readers\ReadFulo;
+use App\Engines\Readers\ReadBujias;
+use App\Engines\Readers\ReadInterfil;
+use App\Engines\Readers\ReadLubricantes;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use App\Responses\ResultResponseData;
+use mysqli;
 
 class TransferenciaProcess{
     private $_log;
@@ -72,6 +73,12 @@ class TransferenciaProcess{
                 case 4:
                 case 5:
                     $this->_log->outMessage("Se trata seguramente de archivo de quimicos. ");
+                    $readQuimicos = new ReadQuimicos(NULL, PROCESS_NAME);
+                    for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++){
+                        $hojaActuales = $spreadsheet->getSheet($indiceHoja)->toArray();
+                        $readQuimicos->readDataQuimicos($fileName,$link,$hojaActuales,$totalDeHojas,$highestRow);
+                    }
+                    $this->setOnResult($fileName,"QUIMICOS","Se procesa correctamente.",true);
                     break;
                 
                 default:
@@ -118,8 +125,8 @@ class TransferenciaProcess{
                         
                         case 'AQ':
                             $this->_log->outMessage("Se trata de un archivo Lubricantes. ");
-                            $readInterfil = new ReadLubricantes(NULL, PROCESS_NAME);
-                            $readInterfil->readData($fileName, $link, $activeSheetData, $highestRow);
+                            $readLubricantes = new ReadLubricantes(NULL, PROCESS_NAME);
+                            $readLubricantes->readData($fileName, $link, $activeSheetData, $highestRow);
                             $this->setOnResult($fileName,"LUBRICANTES","Se procesa correctamente.",true);
                             break;
 

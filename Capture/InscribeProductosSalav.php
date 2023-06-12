@@ -1,6 +1,6 @@
 <?php 
 
-require_once('Persistance.php');
+namespace App\Capture;
 require_once('../Config/GeneralLogger.php');
 
 class InscribeProductosSalav extends Persistance{

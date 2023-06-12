@@ -1,7 +1,7 @@
 <?php 
 
-require_once('Persistance.php');
-require_once('../Config/GeneralLogger.php');
+namespace App\Capture;
+use App\Config\GeneralLogger;
 
 class InscribeBitacora extends Persistance{
     protected string $tableName = 'bitacora';

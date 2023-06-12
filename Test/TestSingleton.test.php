@@ -1,8 +1,8 @@
 <?php
 
-require ("../Config/DbConfig.php");
-require('../Engines/Singleton/BitacoraSingleton.php');
-require('../Engines/Singleton/ProductosSingleton.php');
+use App\Config\DbConfig;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
 
 class TestSigleton {
     public function testRunAddRowToBitacora(mysqli $link, $fileName = "test.test") : void {

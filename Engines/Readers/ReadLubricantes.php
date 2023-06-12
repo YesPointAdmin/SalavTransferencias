@@ -1,7 +1,23 @@
 <?php
 
-require_once('ReaderImplement.php');
-require_once('../Capture/InscribeCatalogoLubricantes.php');
+namespace App\Engines\Readers;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use mysqli;
+
+use App\Capture\InscribeCatalogoLubricantes;
+use App\Capture\InscribeCatalogoOpcion;
+use App\Capture\InscribeCatalogoGrasaBaleros;
+use App\Capture\InscribeCatalogoGrasaJuntas;
+use App\Capture\InscribeCatalogoGrasaChasi;
+use App\Capture\InscribeCatalogoAditivoGasolina;
+use App\Capture\InscribeCatalogoLubricantesRoshfrans;
+use App\Capture\InscribeCatalogoAditivoSI;
+use App\Capture\InscribeCatalogoFluidoFrenos;
+use App\Capture\InscribeCatalogoRefrigerante;
+use App\Capture\InscribeCatalogoMasterLubricantes;
+
+/* require_once('../Capture/InscribeCatalogoLubricantes.php');
 require_once('../Capture/InscribeCatalogoOpcion.php');
 //Se agrega inscribe nuevo
 require_once('../Capture/InscribeCatalogoGrasaBaleros.php');
@@ -12,7 +28,7 @@ require_once('../Capture/InscribeCatalogoLubricantesRoshfrans.php');
 require_once('../Capture/InscribeCatalogoAditivoSI.php');
 require_once('../Capture/InscribeCatalogoFluidoFrenos.php');
 require_once('../Capture/InscribeCatalogoRefrigerante.php');
-require_once('../Capture/InscribeCatalogoMasterLubricantes.php');
+require_once('../Capture/InscribeCatalogoMasterLubricantes.php'); */
 
 class ReadLubricantes extends ReaderImplement{
     
