@@ -1,7 +1,10 @@
 <?php
 
-require_once('ReaderImplement.php');
-require_once('../Capture/InscribeCatalogoQuimicos.php');
+namespace App\Engines\Readers;
+use App\Capture\InscribeCatalogoQuimicos;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use mysqli;
 
 class ReadQuimicos extends ReaderImplement
 {

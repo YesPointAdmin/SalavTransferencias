@@ -5,6 +5,7 @@
  * @property string $message
  * @property mixed $responseData
  */
+namespace App\Interfaces;
 interface ResponseInterface{
     public function __construct(string $endResult,string $message,mixed $responseData);
     public function setEndResult(string $endResult) : void;

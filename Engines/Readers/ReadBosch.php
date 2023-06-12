@@ -1,7 +1,9 @@
 <?php
 
-require_once('ReaderImplement.php');
-
+namespace App\Engines\Readers;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use mysqli;
 class ReadBosch extends ReaderImplement
 {
 

@@ -1,5 +1,6 @@
 <?php
-
+namespace App\Config;
+use Exception;
 class GeneralLogger{
     private string $className;
     private string $outFilePath;

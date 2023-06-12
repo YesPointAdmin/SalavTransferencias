@@ -1,11 +1,11 @@
 <?php
+namespace App\Capture;
 
-require_once('Persistance.php');
 require_once('../Config/GeneralLogger.php');
 
 class InscribeCatalogoOpcion extends Persistance{
 
-    protected string $tableName = 'catalogo_lubricantes';
+    protected string $tableName = 'opcion';
 
     public function generateInsertSentece() : string {
         return (!empty($this->tableName))?

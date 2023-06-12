@@ -6,6 +6,7 @@
  * @property string $message
  * @property bool $status
  */
+namespace App\Interfaces;
 interface ResultInterface{
     public function __construct(string $fileName,string $type,string $message,bool $status);
     public function setFileName(string $fileName) : void;

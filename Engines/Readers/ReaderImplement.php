@@ -1,7 +1,9 @@
 <?php
-
+//use App\Capture;
+namespace App\Engines\Readers;
+use App\Config\GeneralLogger;
+use mysqli;
 //require_once("../Capture/InscribeBitacora.php");
-require_once ('../Config/GeneralLogger.php');
 
 class ReaderImplement extends GeneralLogger{
 

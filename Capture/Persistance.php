@@ -1,6 +1,9 @@
 <?php
-
-require_once('../Config/GeneralLogger.php');
+namespace App\Capture;
+use App\Config\GeneralLogger;
+use App\Engines\Singleton\BitacoraSingleton;
+use Exception;
+use mysqli_stmt;
 
 class Persistance
 {
@@ -176,7 +179,7 @@ class Persistance
         if ($countDatas > 0) {
             foreach ($names as $name) {
                 
-                $this->_log->outDebugMessage(" Data to excecute name: {$name} gettype: ".\gettype($name));
+                //$this->_log->outDebugMessage(" Data to excecute name: {$name} gettype: ".\gettype($name));
                 switch (\gettype($name)) {
                     case 'integer':
                         # code...

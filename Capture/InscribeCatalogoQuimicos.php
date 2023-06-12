@@ -1,6 +1,6 @@
 <?php
 
-require_once('Persistance.php');
+namespace App\Capture;
 
 class InscribeCatalogoQuimicos extends Persistance {
 

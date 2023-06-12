@@ -1,16 +1,17 @@
 <?php
-
-require_once('MyReadFilter.php');
-require_once('../Responses/ResultResponseData.php');
-require_once('Readers/ReadQuimicos.php');
-require_once('Readers/ReadBosch.php');
-require_once('Readers/ReadFritec.php');
-require_once('Readers/ReadFulo.php');
-require_once('Readers/ReadBujias.php');
-require_once('Readers/ReadInterfil.php');
-require_once('Readers/ReadLubricantes.php');
-require('Singleton/BitacoraSingleton.php');
-require('Singleton/ProductosSingleton.php');
+namespace App\Engines;
+use App\Config\GeneralLogger;
+use App\Engines\Readers\ReadQuimicos;
+use App\Engines\Readers\ReadBosch;
+use App\Engines\Readers\ReadFritec;
+use App\Engines\Readers\ReadFulo;
+use App\Engines\Readers\ReadBujias;
+use App\Engines\Readers\ReadInterfil;
+use App\Engines\Readers\ReadLubricantes;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use App\Responses\ResultResponseData;
+use mysqli;
 
 class TransferenciaProcess{
     private $_log;

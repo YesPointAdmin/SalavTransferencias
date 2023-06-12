@@ -1,10 +1,34 @@
 <?php
 
-require_once('ReaderImplement.php');
-require_once('../Capture/InscribeCatalogoLubricantes.php');
+namespace App\Engines\Readers;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use mysqli;
+
+use App\Capture\InscribeCatalogoLubricantes;
+use App\Capture\InscribeCatalogoOpcion;
+use App\Capture\InscribeCatalogoGrasaBaleros;
+use App\Capture\InscribeCatalogoGrasaJuntas;
+use App\Capture\InscribeCatalogoGrasaChasi;
+use App\Capture\InscribeCatalogoAditivoGasolina;
+use App\Capture\InscribeCatalogoLubricantesRoshfrans;
+use App\Capture\InscribeCatalogoAditivoSI;
+use App\Capture\InscribeCatalogoFluidoFrenos;
+use App\Capture\InscribeCatalogoRefrigerante;
+use App\Capture\InscribeCatalogoMasterLubricantes;
+
+/* require_once('../Capture/InscribeCatalogoLubricantes.php');
 require_once('../Capture/InscribeCatalogoOpcion.php');
 //Se agrega inscribe nuevo
 require_once('../Capture/InscribeCatalogoGrasaBaleros.php');
+require_once('../Capture/InscribeCatalogoGrasaJuntas.php');
+require_once('../Capture/InscribeCatalogoGrasaChasi.php');
+require_once('../Capture/InscribeCatalogoAditivoGasolina.php');
+require_once('../Capture/InscribeCatalogoLubricantesRoshfrans.php');
+require_once('../Capture/InscribeCatalogoAditivoSI.php');
+require_once('../Capture/InscribeCatalogoFluidoFrenos.php');
+require_once('../Capture/InscribeCatalogoRefrigerante.php');
+require_once('../Capture/InscribeCatalogoMasterLubricantes.php'); */
 
 class ReadLubricantes extends ReaderImplement{
     
@@ -24,6 +48,14 @@ class ReadLubricantes extends ReaderImplement{
     protected int $countOk = 0;
     protected int $countNotExists = 0;
     protected int $countRepeats = 0;
+    protected InscribeCatalogoGrasaJuntas $inscribeGrasaJuntas;
+    protected InscribeCatalogoGrasaChasi $inscribeGrasaChasi;
+    protected InscribeCatalogoAditivoGasolina $inscribeAditivoGasolina;
+    protected InscribeCatalogoLubricantesRoshfrans $inscribeLubricantesRoshfrans;
+    protected InscribeCatalogoRefrigerante $inscribeRefrigerante;
+    protected InscribeCatalogoFluidoFrenos $inscribeFluidoFrenos;
+    protected InscribeCatalogoAditivoSI $inscribeAditivoSI;
+    protected InscribeCatalogoMasterLubricantes $inscribeMasterLubs;
     
     public function readData(string $fileName, mysqli $link, array $dataToProcess, array $highestRow): void
     {
@@ -36,6 +68,14 @@ class ReadLubricantes extends ReaderImplement{
         $this->inscribeOpcion = new InscribeCatalogoOpcion($link, PROCESS_NAME);
         //Se agrega inscribe nuevo
         $this->inscribeGrasaBaleros = new InscribeCatalogoGrasaBaleros($link, PROCESS_NAME);
+        $this->inscribeGrasaJuntas = new InscribeCatalogoGrasaJuntas($link, PROCESS_NAME);
+        $this->inscribeGrasaChasi = new InscribeCatalogoGrasaChasi($link, PROCESS_NAME);
+        $this->inscribeAditivoGasolina = new InscribeCatalogoAditivoGasolina($link, PROCESS_NAME);
+        $this->inscribeLubricantesRoshfrans = new InscribeCatalogoLubricantesRoshfrans($link, PROCESS_NAME);
+        $this->inscribeRefrigerante = new InscribeCatalogoRefrigerante($link, PROCESS_NAME);
+        $this->inscribeFluidoFrenos = new InscribeCatalogoFluidoFrenos($link, PROCESS_NAME);
+        $this->inscribeAditivoSI = new InscribeCatalogoAditivoSI($link, PROCESS_NAME);
+        $this->inscribeMasterLubs = new InscribeCatalogoMasterLubricantes($link, PROCESS_NAME);
 
         foreach ($dataToProcess as $rowKey => $rowValue) {
             # code...
@@ -85,23 +125,141 @@ class ReadLubricantes extends ReaderImplement{
         
         $getLubIfExists = $this->inscribeLubricantes->executeQuery('select', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"]);
 
-        $this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+        //$this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
 
-        if($getLubIfExists !== 0)
-            $this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+        if($getLubIfExists !== 0){
+            //$this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
+            $this->writeBitacora("Existe en catalogo  lubricantes: {$getLubIfExists[0]['id']}", $fileName);
+            return;
+        }
 
-        $insertedLub = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1');
-        $this->writeBitacora("Test lubricantes insertedLub export: ".var_export($insertedLub,true), $fileName);
+        $this->writeBitacora("Se registrara en catalogo  lubricantes: ", $fileName);
+        $insertedLubID = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1');
+        $this->writeBitacora("Test lubricantes insertedLub export: ".var_export($insertedLubID,true), $fileName);
 
-        //$getOpcionIfExists = $this->inscribeOpcion->executeQuery('select',$dataStructure["0_60k"][0],$dataStructure["0_60k"][1],$dataStructure["61k_100k"][0],$dataStructure["61k_100k"][1],$dataStructure["101k_150k"][0],$dataStructure["101k_150k"][1],$dataStructure["151k_200k"][0],$dataStructure["151k_200k"][1],$dataStructure["200k_o_mas"][0],$dataStructure["200k_o_mas"][1],$dataStructure["fluido_de_frenos"][0],$dataStructure["fluido_de_frenos"][1],$dataStructure["0_200k_refrigerante"][0],$dataStructure["0_200k_refrigerante"][1],$dataStructure["200k_o_mas_refrigerante"][0],$dataStructure["200k_o_mas_refrigerante"][1],$dataStructure["aditivo_sistema_inyeccion"][0],$dataStructure["aditivo_sistema_inyeccion"][1]);
+        $lubIDSOption = [];
+        for($i = 8; $i < array_key_last($this->lubricantesSequence); $i++){
+            $this->writeBitacora("Se registrara en catalogo opcion lubricante {$this->lubricantesSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->lubricantesSequence), $fileName);
+            $this->writeBitacora("Se registrara en catalogo opcion lubricante data export : ".var_export($dataStructure[$this->lubricantesSequence[$i]], true), $fileName);
+            $insertOpcionLubricantesID = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->lubricantesSequence[$i]][0],$dataStructure[$this->lubricantesSequence[$i]][1]);
+            $this->writeBitacora("Test lubricantes insertOpcionLubricantes export: ".var_export($insertOpcionLubricantesID,true), $fileName);
+            $lubIDSOption[$this->lubricantesSequence[$i]] = $insertOpcionLubricantesID;
+            $i += 1;
+        }
+        $this->writeBitacora("Test inserted lubs IDs: ".var_export($lubIDSOption,true), $fileName);
+        $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
+        $insertedLubRoshfransID = $this->inscribeLubricantesRoshfrans->executeQuery('insert', $fileName, $lubIDSOption["0_60k"]??0,$lubIDSOption["61k_100k"]??0,$lubIDSOption["101k_150k"]??0,$lubIDSOption["151k_200k"]??0,$lubIDSOption["200k_o_mas"]??0);
+        $this->writeBitacora("Test lubricantes insertedLubRoshfransID export: ".var_export($insertedLubRoshfransID,true), $fileName);
 
-        //$this->writeBitacora("Test lubricantes getOpcionIfExists export: ".var_export($getOpcionIfExists,true), $fileName);
+        $variosIDsCatalogs = [];
+        $refrigeranteOpcionIDs = [];
+        for($i = 28; $i < array_key_last($this->frenosInyeccionAndRefrigeranteSequence); $i++){
+            $this->writeBitacora("Se registrara en catalogo opcion varios {$this->frenosInyeccionAndRefrigeranteSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+            //$this->writeBitacora("Se registrara en catalogo opcion varios data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+            //$insertOpcionLubricantes = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->lubricantesSequence[$i]][0],$dataStructure[$this->lubricantesSequence[$i]][1]);
+            //$this->writeBitacora("Test lubricantes insertOpcionLubricantes export: ".var_export($insertOpcionLubricantes,true), $fileName);
+            
+            switch ($this->frenosInyeccionAndRefrigeranteSequence[$i]) {
+                case 'fluido_de_frenos':
+                    //$this->writeBitacora("Se registrara en catalogo opcion fluido de frenos {$this->frenosInyeccionAndRefrigeranteSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo opcion fluido de frenos data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+                    $insertOpcionVariosID = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
+                    $this->writeBitacora("Test lubricantes insertOpcionVariosID export: ".var_export($insertOpcionVariosID,true), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo fluido de frenos data export : ".var_export($insertOpcionVariosID, true), $fileName);
+                    $variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]] = $this->inscribeFluidoFrenos->executeQuery('insert', $fileName,  $insertOpcionVariosID ?? 0);
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]],true), $fileName);
+                    
+                    # code...
+                    break;
+                case '0_200k_refrigerante':
+                    $this->writeBitacora("Se registrara en catalogo opcion refrigerante data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+                    $refrigeranteOpcionIDs[] = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
+                    $this->writeBitacora("Test lubricantes refrigeranteOpcionIDs export: ".var_export($refrigeranteOpcionIDs,true), $fileName);
+                    break;
+                case '200k_o_mas_refrigerante':
+                    $this->writeBitacora("Se registrara en catalogo opcion refrigerante data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+                    $refrigeranteOpcionIDs[] = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
+                    $this->writeBitacora("Test lubricantes refrigeranteOpcionIDs export: ".var_export($refrigeranteOpcionIDs,true), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo refrigerante data export : ".var_export($refrigeranteOpcionIDs, true), $fileName);
+                    $variosIDsCatalogs["refrigerante"] = $this->inscribeRefrigerante->executeQuery('insert', $fileName,  $refrigeranteOpcionIDs[0] ?? 0 , $refrigeranteOpcionIDs[1] ?? 0);
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs["refrigerante"],true), $fileName);
+                    # code...
+                    break;
+                case 'aditivo_sistema_inyeccion':
+                    $this->writeBitacora("Se registrara en catalogo opcion aditivo sistema inyeccion data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+                    $insertOpcionVariosID = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
+                    $this->writeBitacora("Test lubricantes insertOpcionVariosID export: ".var_export($insertOpcionVariosID,true), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo aditivo sistema inyeccion data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+                    $variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]] = $this->inscribeAditivoSI->executeQuery('insert', $fileName,  $insertOpcionVariosID ?? 0);
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]],true), $fileName);
 
-        //Se agrega inscribe nuevo
-/*         $getGrasaBalExists = $this->inscribeGrasaBaleros->executeQuery('select',$dataStructure["grasa_baleros"]);
+                    # code...
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+            
+            $i = ($i === 28 || $i === 33)?$i+2:$i + 1;
+        }
+        $this->writeBitacora("Test inserted variosIDsCatalogs: ".var_export($variosIDsCatalogs,true), $fileName);
 
-        $this->writeBitacora("Test lubricantes getGrasaBalExists export: ".var_export($getGrasaBalExists,true), $fileName); */
 
+        for($i = 38; $i <= array_key_last($this->gasolinaAndGrasasSequence); $i++){
+            $this->writeBitacora("Se registrara en catalogo opcion varios {$this->gasolinaAndGrasasSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+            //$this->writeBitacora("Se registrara en catalogo opcion varios data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
+            //$insertOpcionLubricantes = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->lubricantesSequence[$i]][0],$dataStructure[$this->lubricantesSequence[$i]][1]);
+            //$this->writeBitacora("Test lubricantes insertOpcionLubricantes export: ".var_export($insertOpcionLubricantes,true), $fileName);
+            
+            switch ($this->gasolinaAndGrasasSequence[$i]) {
+                case 'aditivo_gasolina':
+                    //$this->writeBitacora("Se registrara en catalogo opcion fluido de frenos {$this->frenosInyeccionAndRefrigeranteSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo opcion aditivo gasolina data export : ".var_export($dataStructure[$this->gasolinaAndGrasasSequence[$i]], true), $fileName);
+                    $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeAditivoGasolina->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    
+                    # code...
+                    break;
+                    
+                case 'grasa_baleros':
+                    //$this->writeBitacora("Se registrara en catalogo opcion fluido de frenos {$this->frenosInyeccionAndRefrigeranteSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo grasa baleros data export : ".var_export($dataStructure[$this->gasolinaAndGrasasSequence[$i]], true), $fileName);
+                    $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeGrasaBaleros->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    
+                    # code...
+                    break;
+
+                    
+                case 'grasa_juntas':
+                    //$this->writeBitacora("Se registrara en catalogo opcion fluido de frenos {$this->frenosInyeccionAndRefrigeranteSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo grasa juntas data export : ".var_export($dataStructure[$this->gasolinaAndGrasasSequence[$i]], true), $fileName);
+                    $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeGrasaJuntas->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    
+                    # code...
+                    break;
+
+                
+                case 'grasa_chasi':
+                    //$this->writeBitacora("Se registrara en catalogo opcion fluido de frenos {$this->frenosInyeccionAndRefrigeranteSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
+                    $this->writeBitacora("Se registrara en catalogo grasa chasi data export : ".var_export($dataStructure[$this->gasolinaAndGrasasSequence[$i]], true), $fileName);
+                    $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeGrasaChasi->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
+                    $this->writeBitacora("Test lubricantes variosIDsCatalogs export: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    
+                    # code...
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+        
+        $this->writeBitacora("Test inserted variosIDsCatalogs 2: ".var_export($variosIDsCatalogs,true), $fileName);
+        $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
+        $insertedMasterLubsID = $this->inscribeMasterLubs->executeQuery('insert', $fileName, $insertedLubID ?? 0,$insertedLubRoshfransID ?? 0, $variosIDsCatalogs["fluido_de_frenos"] ?? 0, $variosIDsCatalogs["refrigerante"] ?? 0, $variosIDsCatalogs["aditivo_sistema_inyeccion"] ?? 0, $variosIDsCatalogs["aditivo_gasolina"] ?? 0, $variosIDsCatalogs["grasa_chasi"] ?? 0,  $variosIDsCatalogs["grasa_juntas"] ?? 0,  $variosIDsCatalogs["grasa_baleros"] ?? 0);
+        $this->writeBitacora("Test lubricantes insertedMasterLubsID export: ".var_export($insertedMasterLubsID,true), $fileName);
 
 
     }
@@ -130,34 +288,6 @@ class ReadLubricantes extends ReaderImplement{
                 return $id;
         }
         return false;
-    }
-
-    public function addCatalogoProductos(string $fileName, mysqli $link, mixed ...$data): mixed
-    {
-        $productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData(...$data);
-        //$productoSalv = ProductosSingleton::getInstance($link)->getRowFromProductosSalavByData("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
-        $result = true;
-        if($productoSalv === 0){
-            //echo "<br /> No existe, se debe guardar";
-            $dataToString =json_encode($data);
-    
-            $this->writeBitacora("Iniciara insercion en ProductoSalav : {$dataToString} ", $fileName);
-            $insertData = ProductosSingleton::getInstance($link)->addRowToProductosSalav(...$data);
-            if (is_bool($insertData))
-                $result = $insertData;
-            else if(is_int($insertData)){
-                $this->writeBitacora("Se ha insertado correctamente ProductoSalav : {$insertData} ", $fileName);
-                $result = $insertData;
-            }   else
-                $result = false;
-            //$insertProductos = ProductosSingleton::getInstance($link)->addRowToProductosSalav("Porsche","Cayenne","2003","2003","4.5L","V8","0986MF4220","","Air Filter",0);
-        }   else{
-            //var_dump($productoSalv);
-            $this->writeBitacora("Ya existe en ProductosSalav, no se guardara. Id: {$productoSalv[0]['id']} ", $fileName);
-            $result = false;
-        }
-
-        return $result;
     }
 
     protected function transformDataIfItsNecesaryLubs(mixed $value, int $key, array $dataStructure, string $fileName = "no_filename", int $inside = 0): mixed

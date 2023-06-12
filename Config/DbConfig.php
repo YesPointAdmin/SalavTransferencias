@@ -1,4 +1,11 @@
 <?php
+namespace App\Config;
+
+//use App\Config\Exception;
+
+use Exception;
+use mysqli;
+
 define('DB_SERVER', 'localhost:3306');
 define('DB_USERNAME', 'prueba_salav2');
 //define('DB_USERNAME', 'edi_db_user');

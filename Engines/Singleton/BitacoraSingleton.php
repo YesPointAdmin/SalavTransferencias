@@ -1,6 +1,8 @@
 <?php
 
-require_once("../Capture/InscribeBitacora.php");
+namespace App\Engines\Singleton;
+use App\Capture\InscribeBitacora;
+use mysqli;
 
 class BitacoraSingleton
 {

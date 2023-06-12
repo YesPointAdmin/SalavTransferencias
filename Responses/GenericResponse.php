@@ -1,6 +1,6 @@
 <?php
-
-require_once("../Interfaces/ResponseInterface.php");
+namespace App\Responses;
+use App\Interfaces\ResponseInterface;
 
 class GenericResponse implements ResponseInterface{
     public string $endResult;

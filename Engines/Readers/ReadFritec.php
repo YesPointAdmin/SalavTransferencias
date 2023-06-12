@@ -1,7 +1,9 @@
 <?php
 
-require_once('ReaderImplement.php');
-
+namespace App\Engines\Readers;
+use App\Engines\Singleton\BitacoraSingleton;
+use App\Engines\Singleton\ProductosSingleton;
+use mysqli;
 class ReadFritec extends ReaderImplement
 {
 
@@ -130,7 +132,6 @@ class ReadFritec extends ReaderImplement
 
             if (!in_array($key, $this->processTrim)) {
 
-                $value = str_replace("'", "", $value);
                 $value = str_replace('"', "", $value);
                 $value = utf8_decode($value);
             }

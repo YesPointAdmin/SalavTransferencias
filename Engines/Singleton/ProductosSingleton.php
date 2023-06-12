@@ -1,7 +1,9 @@
 <?php
 
-require_once("../Capture/InscribeCatalogoProductos.php");
-require_once("../Capture/inscribeProductosSalav.php");
+namespace App\Engines\Singleton;
+use App\Capture\InscribeCatalogoProductos;
+use App\Capture\inscribeProductosSalav;
+use mysqli;
 
 class ProductosSingleton
 {
@@ -26,7 +28,7 @@ class ProductosSingleton
         return self::$instance;
     }
 
-    public function getRowFromCatalogoProductosByPartNumber(string $fileName, string $part_number): mixed
+    public function getRowFromCatalogoProductosByPartNumber(string $fileName, string $part_number) : mixed
     {
         return $this->productosQueryng->executeQuery("select", $fileName, $part_number);
     }

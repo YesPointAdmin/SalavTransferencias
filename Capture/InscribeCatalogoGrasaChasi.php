@@ -1,26 +1,26 @@
-<?php 
-
+<?php
 namespace App\Capture;
+
 require_once('../Config/GeneralLogger.php');
 
-class InscribeProductosSalav extends Persistance{
-    protected string $tableName = 'ProductosSalav';
+class InscribeCatalogoGrasaChasi extends Persistance{
+
+    protected string $tableName = 'grasa_chasi';
 
     public function generateInsertSentece() : string {
         return (!empty($this->tableName))?
-                    "INSERT INTO `{$this->tableName}`(`id`, `Marca`, `Modelo`, `Anio_inicio`, `Anio_fin`, `motor`, `Cil`, `Part_number`, `Position`, `Part_type`, `Id_catprod`) VALUES (NULL,?,?,?,?,?,?,?,?,?,?);"
+                    "INSERT INTO `{$this->tableName}`(`id`, `nombre`) VALUES (NULL,?);"
                     :"";
-    }
-    public function generateSelectSentece() : string {
-        return (!empty($this->tableName))?
-                    "SELECT `id` FROM `{$this->tableName}` WHERE `Marca`=? AND `Modelo`= ? AND `Anio_inicio`=? AND `Anio_fin`=? AND `motor`=? AND `Cil`=? AND `Part_number`=? AND `Position`=? AND `Part_type`=? AND `Id_catprod`=?;"
-                    :"";
-                    
     }
 
-    public function executeQuery($typeOf = "select", string $fileName, mixed ...$data) : mixed{
+    public function generateSelectSentece() : string {
+        return (!empty($this->tableName))?
+                    "SELECT `id`, `nombre` FROM `{$this->tableName}` WHERE `nombre`=?;"
+                    :"";
+    }
+
+    public function executeQuery($typeOf = "select", string $fileName,mixed ...$data) : mixed{
         $result = false;
-        
 
         switch ($typeOf) {
             case 'insert':
@@ -37,13 +37,13 @@ class InscribeProductosSalav extends Persistance{
         //$sqlSentence = $this->generateInsertSentece() or throw new Exception("Error at Generate Sentence", 1);
         
         if(!empty($sqlSentence))
-            $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence, $fileName, ...$data);
+            $result = $this->prepareAndExecuteSentece($typeOf, $sqlSentence, $fileName,...$data);
             
         else 
             $this->_log->outErrorMessage("Error al insertar en '{$this->tableName}' error: Query is empty");
 
         return $result;
-    }
+    }   
 
 }
 
