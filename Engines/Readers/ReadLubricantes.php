@@ -32,6 +32,7 @@ class ReadLubricantes extends ReaderImplement{
     protected int $countOk = 0;
     protected int $countNotExists = 0;
     protected int $countRepeats = 0;
+    protected int $countErrors = 0;
     protected InscribeCatalogoGrasaJuntas $inscribeGrasaJuntas;
     protected InscribeCatalogoGrasaChasi $inscribeGrasaChasi;
     protected InscribeCatalogoAditivoGasolina $inscribeAditivoGasolina;
@@ -113,7 +114,8 @@ class ReadLubricantes extends ReaderImplement{
 
         if($getLubIfExists !== 0){
             //$this->writeBitacora("Test lubricantes getLubIfExists export: ".var_export($getLubIfExists,true), $fileName);
-            $this->writeBitacora("Existe en catalogo  lubricantes: {$getLubIfExists[0]['id']}", $fileName);
+            $this->writeBitacora("Existe en catalogo  lubricantes cond ID: {$getLubIfExists[0]['id']} por tanto no se registra", $fileName);
+            $this->countRepeats += 1;
             return;
         }
 
@@ -121,6 +123,13 @@ class ReadLubricantes extends ReaderImplement{
         $insertedLubID = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1');
         $this->writeBitacora("Test lubricantes insertedLub export: ".var_export($insertedLubID,true), $fileName);
 
+        $this->processToLubs( $dataStructure, $fileName);
+
+        $this->processToVarios( $dataStructure, $fileName);
+
+    }
+
+    protected function processToLubs(array $dataStructure, string $fileName) : void {
         $lubIDSOption = [];
         for($i = 8; $i < array_key_last($this->lubricantesSequence); $i++){
             $this->writeBitacora("Se registrara en catalogo opcion lubricante {$this->lubricantesSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->lubricantesSequence), $fileName);
@@ -130,11 +139,26 @@ class ReadLubricantes extends ReaderImplement{
             $lubIDSOption[$this->lubricantesSequence[$i]] = $insertOpcionLubricantesID;
             $i += 1;
         }
-        $this->writeBitacora("Test inserted lubs IDs: ".var_export($lubIDSOption,true), $fileName);
+        $this->writeBitacora("Test inserted lubs IDs: ".var_export($lubIDSOption,true), $fileName);        $this->writeBitacora("Test inserted lubs IDs: ".var_export($lubIDSOption,true), $fileName);
         $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
         $insertedLubRoshfransID = $this->inscribeLubricantesRoshfrans->executeQuery('insert', $fileName, $lubIDSOption["0_60k"]??0,$lubIDSOption["61k_100k"]??0,$lubIDSOption["101k_150k"]??0,$lubIDSOption["151k_200k"]??0,$lubIDSOption["200k_o_mas"]??0);
         $this->writeBitacora("Test lubricantes insertedLubRoshfransID export: ".var_export($insertedLubRoshfransID,true), $fileName);
+    }
 
+    protected function processToVarios(array $dataStructure, string $fileName) : void {
+
+        $variosIDsCatalogs = $this->processToRefrigeranteFrenosAndAditivo( $dataStructure, $fileName);    
+        
+        $variosIDsCatalogs = $this->processToRefrigeranteFrenosAndAditivo($dataStructure, $fileName, $variosIDsCatalogs);
+
+        $this->writeBitacora("Test inserted variosIDsCatalogs 2: ".var_export($variosIDsCatalogs,true), $fileName);
+        $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
+        $insertedMasterLubsID = $this->inscribeMasterLubs->executeQuery('insert', $fileName, $insertedLubID ?? 0,$insertedLubRoshfransID ?? 0, $variosIDsCatalogs["fluido_de_frenos"] ?? 0, $variosIDsCatalogs["refrigerante"] ?? 0, $variosIDsCatalogs["aditivo_sistema_inyeccion"] ?? 0, $variosIDsCatalogs["aditivo_gasolina"] ?? 0, $variosIDsCatalogs["grasa_chasi"] ?? 0,  $variosIDsCatalogs["grasa_juntas"] ?? 0,  $variosIDsCatalogs["grasa_baleros"] ?? 0);
+        $this->writeBitacora("Test lubricantes insertedMasterLubsID export: ".var_export($insertedMasterLubsID,true), $fileName);
+
+    }
+
+    protected function processToRefrigeranteFrenosAndAditivo(array $dataStructure, string $fileName) : mixed {
         $variosIDsCatalogs = [];
         $refrigeranteOpcionIDs = [];
         for($i = 28; $i < array_key_last($this->frenosInyeccionAndRefrigeranteSequence); $i++){
@@ -188,8 +212,11 @@ class ReadLubricantes extends ReaderImplement{
             $i = ($i === 28 || $i === 33)?$i+2:$i + 1;
         }
         $this->writeBitacora("Test inserted variosIDsCatalogs: ".var_export($variosIDsCatalogs,true), $fileName);
+        return $variosIDsCatalogs;
+    }
 
-
+    public function processToGasolinaAndGrsas(array $dataStructure, string $fileName, array $variosIDsCatalogs) : mixed {
+        
         for($i = 38; $i <= array_key_last($this->gasolinaAndGrasasSequence); $i++){
             $this->writeBitacora("Se registrara en catalogo opcion varios {$this->gasolinaAndGrasasSequence[$i]} . actual key: {$i} laste key: ".array_key_last($this->frenosInyeccionAndRefrigeranteSequence), $fileName);
             //$this->writeBitacora("Se registrara en catalogo opcion varios data export : ".var_export($dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]], true), $fileName);
@@ -241,37 +268,7 @@ class ReadLubricantes extends ReaderImplement{
         }
         
         $this->writeBitacora("Test inserted variosIDsCatalogs 2: ".var_export($variosIDsCatalogs,true), $fileName);
-        $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
-        $insertedMasterLubsID = $this->inscribeMasterLubs->executeQuery('insert', $fileName, $insertedLubID ?? 0,$insertedLubRoshfransID ?? 0, $variosIDsCatalogs["fluido_de_frenos"] ?? 0, $variosIDsCatalogs["refrigerante"] ?? 0, $variosIDsCatalogs["aditivo_sistema_inyeccion"] ?? 0, $variosIDsCatalogs["aditivo_gasolina"] ?? 0, $variosIDsCatalogs["grasa_chasi"] ?? 0,  $variosIDsCatalogs["grasa_juntas"] ?? 0,  $variosIDsCatalogs["grasa_baleros"] ?? 0);
-        $this->writeBitacora("Test lubricantes insertedMasterLubsID export: ".var_export($insertedMasterLubsID,true), $fileName);
-
-
-    }
-
-    protected function validateCatalogoProductos(string $fileName, string $part_number, mysqli $link): mixed
-    {
-        $this->writeBitacora("Se consulta Catalogo de Producto el No. De Parte: {$part_number} ", $fileName);
-        $resultData = ProductosSingleton::getInstance($link)->getRowFromCatalogoProductosByPartNumber($fileName, $part_number);
-        //$resultData = false;
-
-        if (is_bool($resultData))
-            return false;
-
-
-        if (is_array($resultData)) {
-
-            if (count($resultData) === 0)
-                return false;
-
-            $id = $resultData[0]["id"];
-
-
-            $this->outDebugMessage("Dato de array (id) =>  " . $id);
-
-            if (!empty($id))
-                return $id;
-        }
-        return false;
+        return $variosIDsCatalogs;
     }
 
     protected function transformDataIfItsNecesaryLubs(mixed $value, int $key, array $dataStructure, string $fileName = "no_filename", int $inside = 0): mixed

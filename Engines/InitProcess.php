@@ -19,7 +19,9 @@ todo el archivo tiene funciones de lectura de excel, la cuales se encargan de in
 */
 
 require ('../vendor/autoload.php');
-require ('../Config/GeneralLogger.php');
+
+use App\Config\GeneralLogger;
+
 require ('../Config/DbConfig.php');
 require_once('TransferenciaProcess.php');
 require_once('../Responses/GenericResponse.php');

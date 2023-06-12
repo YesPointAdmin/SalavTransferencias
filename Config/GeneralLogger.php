@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Config;
+
 class GeneralLogger{
     private string $className;
     private string $outFilePath;
@@ -38,7 +40,7 @@ class GeneralLogger{
     private function writeFile($message, $pathToWrite = null) : bool {
         $validateProcess = true;
         try{
-            $fileName = $pathToWrite?? throw new Exception("Path to log must be a valid string");
+            $fileName = $pathToWrite?? throw new \Exception("Path to log must be a valid string");
             $dirname = dirname($fileName);
             if (!is_dir($dirname))
                 mkdir($dirname, 0755, true);
@@ -46,8 +48,8 @@ class GeneralLogger{
             if($logFile = fopen($fileName, "a")){
                 fwrite($logFile, "$message" . PHP_EOL);
                 fclose($logFile);
-            } else throw new Exception("Impossible to open or create file at: {$fileName}",1);
-        }catch(Exception $e){
+            } else throw new \Exception("Impossible to open or create file at: {$fileName}",1);
+        }catch(\Exception $e){
             $validateProcess = false;
         }
         return $validateProcess;
@@ -77,7 +79,7 @@ class GeneralLogger{
 
     protected function accessToWrite($message,$type){
         if(!$this->writtingProcessCall($message, $type))
-            throw new Exception("Error at writting Log File", 1);
+            throw new \Exception("Error at writting Log File", 1);
     }
 
     public function outMessage($message = "") : void {

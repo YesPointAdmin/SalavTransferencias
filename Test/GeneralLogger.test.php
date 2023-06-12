@@ -1,6 +1,6 @@
 <?php
 
-require ("../Config/GeneralLogger.php");
+use App\config\GeneralLogger;
 
 echo "Welcome Test <br />";
 class GeneralLoggerTest extends GeneralLogger{

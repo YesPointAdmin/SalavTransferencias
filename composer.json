@@ -3,11 +3,8 @@
     "description": "",
     "autoload": {
         "psr-4": {
-            "App\\": "/"
-        },
-        "classmap": [
-            "/"
-        ]   
+            "App\\": "./"
+        }
     },
     "require": {
         "phpoffice/phpspreadsheet": "^1.23"

@@ -1,6 +1,6 @@
 <?php
 
-require_once('../Config/GeneralLogger.php');
+use App\Config\GeneralLogger;
 
 class Persistance
 {

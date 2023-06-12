@@ -10,6 +10,7 @@ require_once('Readers/ReadInterfil.php');
 require_once('Readers/ReadLubricantes.php');
 require('Singleton/BitacoraSingleton.php');
 require('Singleton/ProductosSingleton.php');
+use App\Config\GeneralLogger;
 
 class TransferenciaProcess{
     private $_log;

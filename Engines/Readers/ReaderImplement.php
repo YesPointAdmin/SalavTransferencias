@@ -1,7 +1,7 @@
 <?php
 
 //require_once("../Capture/InscribeBitacora.php");
-require_once ('../Config/GeneralLogger.php');
+use App\Config\GeneralLogger;
 
 class ReaderImplement extends GeneralLogger{
 

@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Config;
+
 define('DB_SERVER', 'localhost:3306');
 //define('DB_USERNAME', 'prueba_salav2');
 define('DB_USERNAME', 'edi_db_user');
@@ -8,7 +11,9 @@ define('DB_PASSWORD', 'test_pass12');
 //define('DB_PASSWORD', 'lonelyghost');
 define('DB_NAME', 'salav_test');
 //require_once("GeneralLogger.php");
-
+use App\Config\GeneralLogger;
+use mysqli;
+use Exception;
 /* Database credentials. Assuming you are running MySQL
 server with default setting (user 'root' with no password) */
 class DbConfig {
