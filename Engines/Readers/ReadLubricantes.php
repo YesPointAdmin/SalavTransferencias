@@ -114,13 +114,17 @@ class ReadLubricantes extends ReaderImplement{
         $insertedLubID = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1') or throw new Exception("Erro at write into catalogo lubs",1);
         $this->writeBitacora("Se ha insertado en catalgo lubricantes con ID: ".var_export($insertedLubID,true), $fileName);
 
-        $this->processToLubs( $dataStructure, $fileName) or throw new Exception("Error at process Lubs",1);
+        if($insertedLubRoshfransID =$this->processToLubs( $dataStructure, $fileName))
+            return $this->processToVarios( $dataStructure, $fileName, $insertedLubID, $insertedLubRoshfransID)or throw new Exception("Erro at process varioss",1);
 
-        return $this->processToVarios( $dataStructure, $fileName)or throw new Exception("Erro at process varioss",1);
+        else {
+            throw new Exception("Error at process Lubs",1);
+            return false;
+        }
 
     }
 
-    protected function processToLubs(array $dataStructure, string $fileName) : void {
+    protected function processToLubs(array $dataStructure, string $fileName) : int | bool {
         $lubIDSOption = [];
         for($i = 8; $i < array_key_last($this->lubricantesSequence); $i++){
             $this->writeBitacora("Se registrara en catalogo opcion lubricante: ".$this->lubricantesSequence[$i], $fileName);
@@ -132,9 +136,10 @@ class ReadLubricantes extends ReaderImplement{
         $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
         $insertedLubRoshfransID = $this->inscribeLubricantesRoshfrans->executeQuery('insert', $fileName, $lubIDSOption["0_60k"]??0,$lubIDSOption["61k_100k"]??0,$lubIDSOption["101k_150k"]??0,$lubIDSOption["151k_200k"]??0,$lubIDSOption["200k_o_mas"]??0) or throw new Exception("Error at write into lubs roshfrans",1);
         $this->writeBitacora("Se ha insertado en catalgo lubs roshfrans con ID:  ".var_export($insertedLubRoshfransID,true), $fileName);
+        return $insertedLubRoshfransID ?? false;
     }
 
-    protected function processToVarios(array $dataStructure, string $fileName) : int | bool {
+    protected function processToVarios(array $dataStructure, string $fileName, int $insertedLubID, int $insertedLubRoshfransID) : int | bool {
 
         $insertedMasterLubsID = false;
 
