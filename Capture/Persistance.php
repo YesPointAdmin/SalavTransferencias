@@ -19,20 +19,15 @@ class Persistance
 
     public function prepareAndExecuteSentece(string $typeOf = "select", string $sqlQuery, string $fileName, mixed ...$names): mixed
     {
-        //var_dump($names);
-        //echo "<br />";
-        $senteceToExecuteMsg = var_export($names, true);
-        $this->_log->outDebugMessage(" Data to excecute: {$senteceToExecuteMsg}");
-        $this->_log->outDebugMessage(" Data to sqlQuery: {$sqlQuery}");
 
         $sentenceToExecute = null;
         $result = true;
         $data = null;
         try {
             if ($sentenceToExecute = mysqli_prepare($this->connection, $sqlQuery)) {
-                $this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
+                //$this->_log->outMessage("Se ha ejecutara {$sqlQuery}. ");
                 $assigmentArgs = $this->getBindingNamesType(...$names);
-                $this->_log->outMessage("Se procesaran los tipos: {$assigmentArgs}, Para las variables: " . json_encode($names));
+                //$this->_log->outMessage("Se procesaran los tipos: {$assigmentArgs}, Para las variables: " . json_encode($names));
                 if ($sentenceToExecute === "")
                     throw new Exception("Error at binding types => " . mysqli_error($this->connection), 1);
                 mysqli_stmt_bind_param($sentenceToExecute, $assigmentArgs, ...$names);
@@ -71,10 +66,7 @@ class Persistance
             default:
                 $resultData = mysqli_stmt_get_result($sentenceToExecute);
 
-                $this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$resultData->num_rows} ");
-
-                $senteceToExecuteMsg = var_export($resultData, true);
-                $this->_log->outDebugMessage(" Executed result: {$senteceToExecuteMsg}");
+                //$this->_log->outMessage("Se ha ejecutado |{$sqlQuery}| correctamente sobre {$this->tableName}. Num Rows: {$resultData->num_rows} ");
                 
                 if ($resultData->num_rows === 0)
                     return 0;
@@ -91,7 +83,7 @@ class Persistance
                     }
                 }
                 $resultMessage = \json_encode($prepareResult);
-                $this->_log->outMessage("Se ha ejecutado correctamente. Num Rows: {$sentenceToExecute->num_rows} , Result: {$resultMessage}");
+                //$this->_log->outMessage("Se ha ejecutado correctamente. Num Rows: {$sentenceToExecute->num_rows} , Result: {$resultMessage}");
                 $result = $prepareResult;
 
                 $this->cleanMemoryAfterQuery($resultData);

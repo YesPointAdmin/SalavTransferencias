@@ -26,7 +26,10 @@ use App\Engines\TransferenciaProcess;
 use App\Responses\GenericResponse;
 
 $_log = new GeneralLogger("InitProcess",PROCESS_NAME);
+
+$_log->outMessage("--------------------------------------");
 $_log->outMessage("Se inicia el proceso: ".PROCESS_NAME);
+$_log->outMessage("--------------------------------------");
 
 $response = null;
 $toSend = null;
