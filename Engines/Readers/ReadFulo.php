@@ -153,8 +153,7 @@ class ReadFulo extends ReaderImplement
             $value = ltrim($value);
             $value = rtrim($value);
         }
-        // /^$/
-        $regex = "[ ]";
+        
         switch ($key) {
             case 5:
                 //separar anios

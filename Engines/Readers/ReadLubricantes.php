@@ -112,7 +112,7 @@ class ReadLubricantes extends ReaderImplement{
 
         $this->writeBitacora("Se registrara en catalogo  lubricantes: ", $fileName);
         $insertedLubID = $this->inscribeLubricantes->executeQuery('insert', $fileName, $dataStructure["marca"],$dataStructure["modelo"],$dataStructure["anio_inicio"],$dataStructure["anio_fin"],$dataStructure["motor"],$dataStructure["viscosidad"],$dataStructure["servicio"],$dataStructure["homologacion"],'1','1') or throw new Exception("Erro at write into catalogo lubs",1);
-        $this->writeBitacora("Se ha insertado en catalgo lubricantes con ID: ".var_export($insertedLubID,true), $fileName);
+        $this->writeBitacora("Se ha insertado en catalogo lubricantes con ID: ".var_export($insertedLubID,true), $fileName);
 
         if($insertedLubRoshfransID =$this->processToLubs( $dataStructure, $fileName))
             return $this->processToVarios( $dataStructure, $fileName, $insertedLubID, $insertedLubRoshfransID)or throw new Exception("Erro at process varioss",1);
@@ -135,7 +135,7 @@ class ReadLubricantes extends ReaderImplement{
         }
         $this->writeBitacora("Se registrara en catalogo lubricantes roshfrans: ", $fileName);
         $insertedLubRoshfransID = $this->inscribeLubricantesRoshfrans->executeQuery('insert', $fileName, $lubIDSOption["0_60k"]??0,$lubIDSOption["61k_100k"]??0,$lubIDSOption["101k_150k"]??0,$lubIDSOption["151k_200k"]??0,$lubIDSOption["200k_o_mas"]??0) or throw new Exception("Error at write into lubs roshfrans",1);
-        $this->writeBitacora("Se ha insertado en catalgo lubs roshfrans con ID:  ".var_export($insertedLubRoshfransID,true), $fileName);
+        $this->writeBitacora("Se ha insertado en catalogo lubs roshfrans con ID:  ".var_export($insertedLubRoshfransID,true), $fileName);
         return $insertedLubRoshfransID ?? false;
     }
 
@@ -149,7 +149,7 @@ class ReadLubricantes extends ReaderImplement{
 
         $this->writeBitacora("Se registrara en catalogo master lubs: ", $fileName);
         $insertedMasterLubsID = $this->inscribeMasterLubs->executeQuery('insert', $fileName, $insertedLubID ?? 0,$insertedLubRoshfransID ?? 0, $variosIDsCatalogs["fluido_de_frenos"] ?? 0, $variosIDsCatalogs["refrigerante"] ?? 0, $variosIDsCatalogs["aditivo_sistema_inyeccion"] ?? 0, $variosIDsCatalogs["aditivo_gasolina"] ?? 0, $variosIDsCatalogs["grasa_chasi"] ?? 0,  $variosIDsCatalogs["grasa_juntas"] ?? 0,  $variosIDsCatalogs["grasa_baleros"] ?? 0) or throw new Exception("Error at write into Master Lubs",1);;
-        $this->writeBitacora("Se ha insertado en catalgo master Lubs con ID:  ".var_export($insertedMasterLubsID,true), $fileName);
+        $this->writeBitacora("Se ha insertado en catalogo master Lubs con ID:  ".var_export($insertedMasterLubsID,true), $fileName);
 
         return (is_integer($insertedMasterLubsID)||is_bool($insertedMasterLubsID))?$insertedMasterLubsID:false;
     }
@@ -163,31 +163,31 @@ class ReadLubricantes extends ReaderImplement{
             switch ($this->frenosInyeccionAndRefrigeranteSequence[$i]) {
                 case 'fluido_de_frenos':
                     $insertOpcionVariosID = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
-                    $this->writeBitacora("Se ha insertado en catalgo opcion para frenos con ID: ".var_export($insertOpcionVariosID,true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo opcion para frenos con ID: ".var_export($insertOpcionVariosID,true), $fileName);
                     $this->writeBitacora("Se registrara en catalogo fluido de frenos : ", $fileName);
                     $variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]] = $this->inscribeFluidoFrenos->executeQuery('insert', $fileName,  $insertOpcionVariosID ?? 0);
-                    $this->writeBitacora("Se ha insertado en catalgo fluido de frenos con ID: ".var_export($variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo fluido de frenos con ID: ".var_export($variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]],true), $fileName);
                     
                     # code...
                     break;
                 case '0_200k_refrigerante':
                     $refrigeranteOpcionIDs[] = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
-                    $this->writeBitacora("Se ha insertado en catalgo opcion para refrigerante con ID: ".var_export($refrigeranteOpcionIDs,true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo opcion para refrigerante con ID: ".var_export($refrigeranteOpcionIDs,true), $fileName);
                     break;
                 case '200k_o_mas_refrigerante':
                     $refrigeranteOpcionIDs[] = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
-                    $this->writeBitacora("Se ha insertado en catalgo opcion para refrigerante con ID: ".var_export($refrigeranteOpcionIDs,true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo opcion para refrigerante con ID: ".var_export($refrigeranteOpcionIDs,true), $fileName);
                     $this->writeBitacora("Se registrara en catalogo refrigerante: ", $fileName);
                     $variosIDsCatalogs["refrigerante"] = $this->inscribeRefrigerante->executeQuery('insert', $fileName,  $refrigeranteOpcionIDs[0] ?? 0 , $refrigeranteOpcionIDs[1] ?? 0) ;
-                    $this->writeBitacora("Se ha insertado en catalgo refrigerante con ID: ".var_export($variosIDsCatalogs["refrigerante"],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo refrigerante con ID: ".var_export($variosIDsCatalogs["refrigerante"],true), $fileName);
                     # code...
                     break;
                 case 'aditivo_sistema_inyeccion':
                     $insertOpcionVariosID = $this->inscribeOpcion->executeQuery('insert', $fileName,  $dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][0],$dataStructure[$this->frenosInyeccionAndRefrigeranteSequence[$i]][1]);
-                    $this->writeBitacora("Se ha insertado en catalgo opcion para inyeccion con ID: ".var_export($insertOpcionVariosID,true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo opcion para inyeccion con ID: ".var_export($insertOpcionVariosID,true), $fileName);
                     $this->writeBitacora("Se registrara en catalogo aditivo sistema inyeccion: ", $fileName);
                     $variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]] = $this->inscribeAditivoSI->executeQuery('insert', $fileName,  $insertOpcionVariosID ?? 0);
-                    $this->writeBitacora("Se ha insertado en catalgo inyeccion con ID: ".var_export($variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo inyeccion con ID: ".var_export($variosIDsCatalogs[$this->frenosInyeccionAndRefrigeranteSequence[$i]],true), $fileName);
 
                     # code...
                     break;
@@ -211,27 +211,27 @@ class ReadLubricantes extends ReaderImplement{
             switch ($this->gasolinaAndGrasasSequence[$i]) {
                 case 'aditivo_gasolina':
                     $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeAditivoGasolina->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
-                    $this->writeBitacora("Se ha insertado en catalgo gasolina con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo gasolina con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
 
                     break;
                     
                 case 'grasa_baleros':
                     $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeGrasaBaleros->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
-                    $this->writeBitacora("Se ha insertado en catalgo baleros con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo baleros con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
 
                     break;
 
                     
                 case 'grasa_juntas':
                     $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeGrasaJuntas->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
-                    $this->writeBitacora("Se ha insertado en catalgo juntas con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo juntas con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
 
                     break;
 
                 
                 case 'grasa_chasi':
                     $variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]] = $this->inscribeGrasaChasi->executeQuery('insert', $fileName,  $dataStructure[$this->gasolinaAndGrasasSequence[$i]] ?? "N/A");
-                    $this->writeBitacora("Se ha insertado en catalgo chasis con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
+                    $this->writeBitacora("Se ha insertado en catalogo chasis con ID: ".var_export($variosIDsCatalogs[$this->gasolinaAndGrasasSequence[$i]],true), $fileName);
 
                     break;
                 default:
