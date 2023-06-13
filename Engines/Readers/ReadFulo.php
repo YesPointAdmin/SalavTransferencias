@@ -24,6 +24,11 @@ class ReadFulo extends ReaderImplement
         $countNotExists = 0;
         $countRepeats = 0;
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: FULO', '', '', '', '0', '0');
+
+        $this->writeBitacora("--------------------------------------", $fileName);
+        $this->writeBitacora("Se inicia proceso para FULO...", $fileName);
+        $this->writeBitacora("--------------------------------------", $fileName);
+
         foreach ($dataToProcess as $rowKey => $rowValue) {
             # code...
             $readMoment = \time();
@@ -34,7 +39,7 @@ class ReadFulo extends ReaderImplement
                 if ($dataToRetrieve = $this->retrieveDataStructure($fileName, $rowKey, $rowValue)) {
 
                     $this->writeBitacora("Datos recuperados, continua proceso. ", $fileName);
-                    $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToRetrieve, true), $fileName);
+                    //$this->writeBitacora("Datos recuperados var_export. " . var_export($dataToRetrieve, true), $fileName);
                     //Validar en catalogo_producto por part_number
                     foreach($dataToRetrieve["part_number"] as $partKey => $part_number){
                         if ($idCatalogoProducto = $this->validateCatalogoProductos($fileName, $part_number, $link)) {

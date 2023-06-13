@@ -24,6 +24,11 @@ class ReadBosch extends ReaderImplement
         $countNotExists = 0;
         $countRepeats = 0;
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: BOSH', '', '', '', '0', '0');
+
+        $this->writeBitacora("--------------------------------------", $fileName);
+        $this->writeBitacora("Se inicia proceso para BOSCH...", $fileName);
+        $this->writeBitacora("--------------------------------------", $fileName);
+
         foreach ($dataToProcess as $rowKey => $rowValue) {
             $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToProcess, true), $fileName);
             # code...

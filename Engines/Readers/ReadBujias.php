@@ -25,6 +25,11 @@ class ReadBujias extends ReaderImplement
         $countNotExists = 0;
         $countRepeats = 0;
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: BUJIAS', '', '', '', '0', '0');
+
+        $this->writeBitacora("--------------------------------------", $fileName);
+        $this->writeBitacora("Se inicia proceso para BUJIAS...", $fileName);
+        $this->writeBitacora("--------------------------------------", $fileName);
+
         foreach ($dataToProcess as $rowKey => $rowValue) {
             # code...
             $readMoment = \time();

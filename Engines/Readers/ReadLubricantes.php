@@ -67,7 +67,7 @@ class ReadLubricantes extends ReaderImplement{
         $this->inscribeMasterLubs = new InscribeCatalogoMasterLubricantes($link, PROCESS_NAME);
 
         $this->writeBitacora("--------------------------------------", $fileName);
-        $this->writeBitacora("Se inicia proceso para Lurbicantes...", $fileName);
+        $this->writeBitacora("Se inicia proceso para Lubricantes...", $fileName);
         $this->writeBitacora("--------------------------------------", $fileName);
 
         foreach ($dataToProcess as $rowKey => $rowValue) {

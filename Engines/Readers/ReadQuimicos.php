@@ -29,9 +29,12 @@ class ReadQuimicos extends ReaderImplement
 
         BitacoraSingleton::getInstance($link)->addRowToBitacora($fileName, 'Se detecto el siguente provedor: QUIMICOS', '', '', '', '0', '0');
 
-
+        $this->writeBitacora("--------------------------------------", $fileName);
+        $this->writeBitacora("Se inicia proceso para QUIMICOS...", $fileName);
+        $this->writeBitacora("--------------------------------------", $fileName);
+        
         foreach ($dataToProcess as $rowKey => $rowValue) {
-            $this->writeBitacora("Datos recuperados var_export. " . var_export($dataToProcess, true), $fileName);
+            //$this->writeBitacora("Datos recuperados var_export. " . var_export($dataToProcess, true), $fileName);
             //$this->writeBitacora("Datos recuperados var_export. " . var_export($rowKey, true), $fileName);
             //$this->writeBitacora("Datos recuperados var_export. " . var_export($rowValue, true), $fileName);
             # code...
