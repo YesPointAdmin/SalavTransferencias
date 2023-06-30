@@ -20,7 +20,7 @@ class GeneralLogger{
         return $this->writeFile($this->getFomatMessage($message, $type ),$this->validateType($type));
     }
 
-    protected function bitacoraWrittingProcessCall($message = "",$path) : bool{
+    protected function bitacoraWrittingProcessCall($message = "",$path = "") : bool{
         return $this->writeFile($message,$path);
     }
 
